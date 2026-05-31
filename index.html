@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Recepción de Equipo - Servitec NET</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif; margin: 0; padding: 0;
+      background: url('fondo-servitec.jpg') no-repeat center center fixed;
+      background-size: cover;
+      position: relative;
+      min-height: 100vh;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      backdrop-filter: blur(8px);
+      background: rgba(15,50,40,0.32);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .container {
+      max-width: 820px;
+      margin: 20px auto;
+      background: rgba(255,255,255, 0.90);
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.22);
+      overflow: hidden;
+      z-index: 1;
+      position: relative;
+      backdrop-filter: blur(2px);
+    }
+    h2 { margin-top: 1.5em; }
+    .required { color: red; }
+    .section { margin-bottom: 2em; }
+    .row, .input-group { display: flex; gap: 1em; align-items: center; }
+    .row { flex-wrap: wrap; }
+    .input-group { margin-bottom: 0.7em; }
+    label { font-weight: bold; margin-top: 1em; display: block; }
+    .input-group label, .row label { margin-top: 0; }
+    input, select, textarea { width: 100%; margin-top: 0.3em; padding: 8px; border-radius: 4px; border: 1px solid #ccc;}
+    .input-group input, .input-group select { width: auto; min-width: 60px; flex: 1; }
+    .input-group select { max-width: 120px; }
+    .btn { background: #007bff; color: #fff; padding: 10px 18px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1em;}
+    .btn-clear { background: #ccc; color: #333;}
+    .btn-print { background: #28a745; color: #fff;}
+    .btn-pdf { background: #ff9800; color: #fff;}
+    .botones-formulario {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      margin-top: 2em;
+      margin-bottom: 1em;
+    }
+    .btn-historial {
+      background: #40ffb7;
+      color: #181f1b;
+      border: none;
+      border-radius: 5px;
+      padding: 11px 26px;
+      font-size: 1.08em;
+      font-weight: bold;
+      margin-top: 2em;
+      cursor: pointer;
+      box-shadow: 0 2px 12px #1976d299;
+      transition: background 0.18s, color 0.18s;
+      display: block;
+      width: 100%;
+      max-width: 280px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .btn-historial:hover {
+      background: #1976d2;
+      color: #fff;
+      box-shadow: 0 0 20px 3px #40ffb7b5;
+    }
+    .alert { color: green; margin-top: 1em;}
+    .header {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      margin-bottom: 2em;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 12px;
+      width: 100%;
+      box-sizing: border-box;
+      position: relative;
+      min-height: 70px;
+    }
+    .contact-info {
+      text-align: left;
+      font-size: 0.95em;
+      color: #222;
+      line-height: 1.4;
+      width: 100%;
+      margin-right: 16px;
+    }
+    .order-number {
+      font-size: 1.15em;
+      color: #007bff;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+    .order-number span {
+      color: #1976d2;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .logo {
+      max-height: 50px;
+      width: auto;
+      margin-left: 24px;
+      margin-top: 3px;
+      margin-bottom: 3px;
+      flex-shrink: 0;
+      display: block;
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .fecha-recepcion-group label {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-bottom: 0.6em;
+    }
+    .fecha-recepcion-group input {
+      font-size: 1.1em;
+      letter-spacing: 1px;
+      font-family: monospace;
+      width: 90%;
+      max-width: 230px;
+      margin-top: 0.4em;
+      background: #fafafa;
+      color: #222;
+      text-align: left;
+    }
+    .personal-row { display: flex; align-items: center; gap: 1em; margin-bottom: 1em;}
+    .personal-row label { margin-top: 0; min-width: 130px;}
+    .id-row { display: flex; align-items: center; gap: 1em; }
+    .id-row select, .id-row input { min-width: 120px; flex: none; width: auto;}
+    .cliente-nomape-row { display: flex; align-items: center; gap: 1em;}
+    .cliente-nomape-row input { min-width: 150px; width: 100%;}
+    .cliente-contact-row { display: flex; align-items: center; gap: 1em; margin-bottom: 0.7em; }
+    .cliente-contact-row label { min-width: 90px; margin-top: 0; }
+    .cliente-contact-row input { min-width: 120px; width: 100%;}
+    form, .section, .personal-row, .id-row, .cliente-nomape-row, .cliente-contact-row { box-sizing: border-box; width: 100%; }
+    .mini-input {
+      width: 48px !important;
+      min-width: 0 !important;
+      margin-left: 6px;
+      margin-bottom: 2px;
+      display: inline-block;
+      font-size: 0.95em;
+      padding: 4px 4px;
+      text-align: center;
+    }
+    .logout-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: #dc3545;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      font-size: 1em;
+      cursor: pointer;
+      z-index: 20;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      min-width: 120px;
+      margin-top: 12px;
+      margin-right: 24px;
+    }
+    .logout-btn:hover {
+      background: #b52a38;
+    }
+    .header .logo {
+      align-self: flex-end;
+      margin-left: 24px;
+      margin-bottom: 0;
+    }
+    /* MODAL RESPONSIVE Y ADAPTACIÓN GENERAL */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(10,30,25,0.57);
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(3px);
+    }
+    .modal-bg.active { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 38px rgba(0,0,0,0.24);
+      min-width: 300px;
+      max-width: 97vw;
+      width: 370px;
+      padding: 20px 14px 16px 14px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      box-sizing: border-box;
+    }
+    .modal-box input[type="text"], .clientes-lista {
+      max-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
+      margin: 0 0 12px 0;
+    }
+    .clientes-lista {
+      margin-bottom: 4px;
+    }
+    .modal-close {
+      position: absolute;
+      top: 11px; right: 15px;
+      background: none;
+      border: none;
+      color: #b0e7d0;
+      font-size: 1.3em;
+      cursor: pointer;
+      font-weight: bold;
+      z-index: 2;
+      transition: color 0.18s;
+    }
+    .modal-close:hover {
+      color: #ff5656;
+    }
+    .modal-box h3 {
+      margin: 0 0 8px 0;
+      font-size: 1.12em;
+      color: #1976d2;
+      font-weight: bold;
+      letter-spacing: 0.01em;
+    }
+    .modal-box input[type="text"] {
+      width: 100%;
+      padding: 10px 9px;
+      border-radius: 7px;
+      border: 1.5px solid #1976d2;
+      margin-bottom: 12px;
+      font-size: 1.05em;
+      outline: none;
+    }
+    .modal-box input[type="text"]:focus {
+      border: 1.5px solid #40ffb7;
+    }
+    .clientes-lista {
+      max-height: 220px;
+      overflow-y: auto;
+      border-radius: 7px;
+      border: 1px solid #e0e0e0;
+      background: #fbfbfc;
+      box-shadow: 0 2px 10px #1976d211;
+      margin-bottom: 4px;
+    }
+    .cliente-elem {
+      padding: 9px 9px;
+      border-bottom: 1px solid #e5e5e5;
+      cursor: pointer;
+      transition: background 0.18s;
+      font-size: 0.97em;
+    }
+    .cliente-elem:last-child { border-bottom: none; }
+    .cliente-elem:hover, .cliente-elem.selected {
+      background: #40ffb7;
+      color: #111;
+    }
+    .cliente-nores {
+      color: #666;
+      padding: 9px;
+      text-align: center;
+      font-size: 0.97em;
+    }
+    @media (max-width: 700px) {
+      .row, .input-group, .cliente-nomape-row, .cliente-contact-row { flex-direction: column; align-items: stretch; }
+      .contact-info { text-align: left !important;}
+      .header { flex-direction: column; align-items: flex-start; }
+      .logo { margin-left: 0; margin-top: 16px; }
+      .logout-btn { align-self: flex-end !important; margin: 8px 0 0 0 !important; }
+      .container { padding: 10px 3vw; }
+      h1 { font-size: 1.3em; }
+      h2 { font-size: 1.1em; }
+      .modal-box { min-width: 95vw; width: 98vw; padding: 12px 2vw 13px 2vw; }
+      .modal-box h3 { font-size: 1em; }
+    }
+    @media (max-width: 450px) {
+      .container { padding: 7px 1vw; }
+      .header { min-height: 30px; }
+      .modal-box { min-width: 98vw; width: 99vw; padding: 6px 1vw 10px 1vw;}
+      .btn, .btn-historial { font-size: 0.97em; }
+      .modal-box h3 { font-size: 0.95em; }
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="container" id="printArea">
+    <div class="header">
+      <button type="button" class="logout-btn" onclick="cerrarSesion()">Cerrar sesión</button>
+      <div class="contact-info">
+        <div>Servitec NET</div>
+        <div>Contacto: 922657185</div>
+        <div>Email: experto.sistemasti@gmail.com</div>
+        <div>Dirección: MZ E LOTE 32 ANCIETA ALTA - EL AGUSTINO</div>
+        <div class="order-number">N° de Orden: <span id="numeroOrden"></span></div>
+      </div>
+      <img src="logo-servitec.png" alt="Logo Servitec NET" class="logo" id="logoEmpresa">
+    </div>
+    <h1>Recepción de Equipo</h1>
+    <form id="recepcionForm" autocomplete="off">
+      <!-- Datos del Personal -->
+      <div class="personal-row">
+        <label for="personal_atencion">Personal que atendió:</label>
+        <input type="text" name="personal_atencion" id="personal_atencion" placeholder="Nombre del personal" required>
+      </div>
+      <!-- Datos del Cliente -->
+      <div class="section">
+        <h2>Datos del Cliente</h2>
+        <div class="id-row">
+          <select name="tipo_documento" required>
+            <option value="">Tipo de documento</option>
+            <option>DNI</option>
+            <option>RUC</option>
+            <option>C.E.</option>
+            <option>Pasaporte</option>
+          </select>
+          <input type="text" name="numero_documento" placeholder="Número documento" required>
+        </div>
+        <div class="cliente-nomape-row">
+          <input type="text" name="nombres" placeholder="Nombres" required>
+          <input type="text" name="apellidos" placeholder="Apellidos" required>
+        </div>
+        <div class="cliente-contact-row">
+          <label>Teléfono <span class="required">*</span></label>
+          <input type="tel" name="telefono" required pattern="[0-9]{9}" placeholder="Ej: 981132005">
+          <label>Email <span class="required">*</span></label>
+          <input type="email" name="email" required>
+          <label>Dirección</label>
+          <input type="text" name="direccion">
+        </div>
+        <button type="button" class="btn" id="btnBuscarCliente" style="margin-top:1em;">Buscar cliente existente</button>
+      </div>
+      <!-- Datos del Equipo -->
+      <div class="section">
+        <h2>Datos del Equipo</h2>
+        <label>Tipo de equipo <span class="required">*</span></label>
+        <select name="tipo_equipo" required>
+          <option value="">Selecciona</option>
+          <option>Laptop</option>
+          <option>PC Escritorio</option>
+          <option>Tablet</option>
+          <option>Celular</option>
+        </select>
+        <label>Modelo <span class="required">*</span></label>
+        <input type="text" name="modelo" required>
+        <label>Serie</label>
+        <input type="text" name="serie">
+        <label>Descripción del problema <span class="required">*</span></label>
+        <textarea name="descripcion_problema" required></textarea>
+        <label>Adjuntar imágenes</label>
+        <input type="file" name="imagenes_equipo" multiple accept="image/*">
+      </div>
+      <!-- Estado del Equipo -->
+      <div class="section">
+        <h2>Estado del Equipo</h2>
+        <label>Estado físico</label>
+        <select name="estado_fisico">
+          <option value="">Selecciona</option>
+          <option>Sin daños</option>
+          <option>Pantalla rota</option>
+          <option>Rayaduras</option>
+          <option>Golpes visibles</option>
+          <option>Otros</option>
+        </select>
+        <label>Observaciones de estado físico</label>
+        <input type="text" name="obs_estado_fisico">
+      </div>
+      <!-- Componentes Incluidos -->
+      <div class="section">
+        <h2>Componentes Incluidos</h2>
+        <label>Procesador</label>
+        <div class="input-group">
+          <select name="tipo_procesador">
+            <option value="">Marca</option>
+            <option>AMD</option>
+            <option>Intel</option>
+            <option>Otro</option>
+          </select>
+          <input type="text" name="numero_procesador" placeholder="Ej: Ryzen 5 5600X o i7-10700K">
+        </div>
+        <label>Memoria RAM</label>
+        <div class="input-group">
+          <select name="capacidad_ram" id="capacidad_ram" onchange="mostrarOtraRam()">
+            <option value="">Capacidad</option>
+            <option>4 GB</option>
+            <option>8 GB</option>
+            <option>16 GB</option>
+            <option>32 GB</option>
+            <option>64 GB</option>
+            <option>128 GB</option>
+            <option value="otro">Otro</option>
+          </select>
+          <input type="text" name="otra_ram" id="otra_ram" class="mini-input" placeholder="Otra" maxlength="8" style="display:none;" />
+          <select name="tipo_ram">
+            <option value="">Tipo</option>
+            <option>DDR2</option>
+            <option>DDR3</option>
+            <option>DDR4</option>
+            <option>DDR5</option>
+          </select>
+        </div>
+        <label>Tarjeta gráfica</label>
+        <div class="input-group">
+          <select name="tipo_grafica">
+            <option value="">Serie</option>
+            <option>GTX</option>
+            <option>RTX</option>
+            <option>RX</option>
+            <option>ARC</option>
+          </select>
+          <input type="text" name="numero_grafica" placeholder="Ej: 5090, 7800XT, etc.">
+          <select name="vram_grafica">
+            <option value="">VRAM</option>
+            <option>2 GB</option>
+            <option>4 GB</option>
+            <option>6 GB</option>
+            <option>8 GB</option>
+            <option>12 GB</option>
+            <option>16 GB</option>
+            <option>24 GB</option>
+          </select>
+          <select name="marca_grafica">
+            <option value="">Marca</option>
+            <option>NVIDIA</option>
+            <option>AMD</option>
+            <option>Intel</option>
+          </select>
+        </div>
+        <label>Almacenamiento</label>
+        <div class="input-group" style="align-items: flex-end;">
+          <select name="tipo_almacenamiento">
+            <option value="">Tipo</option>
+            <option>HDD</option>
+            <option>SSD</option>
+            <option>M.2</option>
+          </select>
+          <select name="capacidad_almacenamiento" id="capacidad_almacenamiento" onchange="mostrarOtraCapacidad()">
+            <option value="">Capacidad</option>
+            <option>125 GB</option>
+            <option>250 GB</option>
+            <option>500 GB</option>
+            <option>1 TB</option>
+            <option>2 TB</option>
+            <option>4 TB</option>
+            <option value="otro">Otro</option>
+          </select>
+          <input type="text" name="otra_capacidad" id="otra_capacidad" class="mini-input" placeholder="Ej: 3" maxlength="6" style="display:none;" />
+          <select name="otra_capacidad_unidad" id="otra_capacidad_unidad" class="mini-input" style="display:none;">
+            <option value="GB" selected>GB</option>
+            <option value="TB">TB</option>
+            <option value="MB">MB</option>
+          </select>
+        </div>
+        <label>Componentes adicionales</label>
+        <div class="row">
+          <label><input type="checkbox" name="cargador"> Cargador</label>
+          <label><input type="checkbox" name="mouse"> Mouse</label>
+          <label><input type="checkbox" name="teclado"> Teclado</label>
+          <label><input type="checkbox" name="funda"> Funda</label>
+          <label><input type="checkbox" name="otros_componentes"> Otros</label>
+        </div>
+        <label>Observaciones</label>
+        <textarea name="observaciones"></textarea>
+      </div>
+      <!-- Fecha y hora automática, con formato personalizado -->
+      <div class="section">
+        <h2>Registro</h2>
+        <div class="fecha-recepcion-group">
+          <label for="fechaRecepcionInput">Fecha de recepción</label>
+          <input type="text" id="fechaRecepcionInput" name="fecha_recepcion" value="" readonly>
+        </div>
+      </div>
+      <!-- Botones centrados -->
+      <div class="botones-formulario">
+        <button type="submit" class="btn">Registrar Recepción</button>
+        <button type="button" class="btn btn-clear" onclick="document.getElementById('recepcionForm').reset(); actualizarFechaRecepcion();">Limpiar Formulario</button>
+        <button type="button" class="btn btn-print" onclick="window.print();">Imprimir</button>
+        <button type="button" class="btn btn-pdf" onclick="descargarPDF()">Descargar PDF</button>
+      </div>
+      <div class="alert" id="alerta"></div>
+    </form>
+    <button id="btnVerHistorial" class="btn-historial" style="display:none;" onclick="verHistorial()">Ver historial</button>
+  </div>
+  <!-- MODAL CLIENTE -->
+  <div class="modal-bg" id="modalBuscarCliente">
+    <div class="modal-box">
+      <button class="modal-close" onclick="cerrarModalBuscarCliente()" title="Cerrar">&times;</button>
+      <h3>Buscar cliente existente</h3>
+      <input type="text" id="inputBuscarCliente" placeholder="Buscar por nombre o DNI...">
+      <div class="clientes-lista" id="listadoClientes">
+        <div class="cliente-nores">Cargando clientes...</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // --- MODAL CLIENTES ---
+    let clientesData = [];
+    document.getElementById('btnBuscarCliente').onclick = function() {
+      abrirModalBuscarCliente();
+    };
+    function abrirModalBuscarCliente() {
+      document.getElementById('modalBuscarCliente').classList.add('active');
+      document.getElementById('inputBuscarCliente').value = "";
+      document.getElementById('inputBuscarCliente').focus();
+      cargarClientesModal();
+    }
+    function cerrarModalBuscarCliente() {
+      document.getElementById('modalBuscarCliente').classList.remove('active');
+    }
+    function cargarClientesModal() {
+      if (clientesData.length === 0) {
+        fetch('/api/clientes')
+          .then(res => res.json())
+          .then(data => {
+            clientesData = Array.isArray(data.clientes) ? data.clientes : [];
+            mostrarClientesFiltrados('');
+          });
+      } else {
+        mostrarClientesFiltrados('');
+      }
+    }
+    function mostrarClientesFiltrados(filtro) {
+      const lista = document.getElementById('listadoClientes');
+      filtro = (filtro || '').toLowerCase().trim();
+      const filtrados = clientesData.filter(c =>
+        (c.nombres && c.nombres.toLowerCase().includes(filtro)) ||
+        (c.apellidos && c.apellidos.toLowerCase().includes(filtro)) ||
+        (c.numero_documento && String(c.numero_documento).toLowerCase().includes(filtro))
+      );
+      if (!clientesData.length) {
+        lista.innerHTML = '<div class="cliente-nores">No hay clientes registrados.</div>';
+        return;
+      }
+      if (filtrados.length === 0) {
+        lista.innerHTML = '<div class="cliente-nores">No hay coincidencias.</div>';
+        return;
+      }
+      lista.innerHTML = filtrados.map(c => {
+        let nombre = (c.nombres || c.cliente || '') + (c.apellidos ? ' ' + c.apellidos : '');
+        let doc = c.numero_documento ? ` (${c.numero_documento})` : '';
+        return `<div class="cliente-elem" tabindex="0" onclick="seleccionarClienteModal(${c.id})">${nombre}${doc}</div>`;
+      }).join('');
+    }
+    document.getElementById('inputBuscarCliente').addEventListener('input', function() {
+      mostrarClientesFiltrados(this.value);
+    });
+    document.getElementById('inputBuscarCliente').addEventListener('keydown', function(e){
+      const lista = document.getElementById('listadoClientes');
+      let items = Array.from(lista.querySelectorAll('.cliente-elem'));
+      let idx = items.findIndex(el => el.classList.contains('selected'));
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (items.length) {
+          if (idx >= 0) items[idx].classList.remove('selected');
+          idx = (idx + 1) % items.length;
+          items[idx].classList.add('selected');
+          items[idx].scrollIntoView({block:'nearest'});
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (items.length) {
+          if (idx >= 0) items[idx].classList.remove('selected');
+          idx = (idx - 1 + items.length) % items.length;
+          items[idx].classList.add('selected');
+          items[idx].scrollIntoView({block:'nearest'});
+        }
+      } else if (e.key === 'Enter') {
+        if (items.length && idx >= 0) {
+          items[idx].click();
+        }
+      }
+    });
+    function seleccionarClienteModal(id) {
+      const cliente = clientesData.find(c => c.id == id);
+      if (!cliente) return;
+      document.querySelector('[name="tipo_documento"]').value = cliente.tipo_documento || '';
+      document.querySelector('[name="numero_documento"]').value = cliente.numero_documento || '';
+      document.querySelector('[name="nombres"]').value = cliente.nombres || cliente.cliente || '';
+      document.querySelector('[name="apellidos"]').value = cliente.apellidos || '';
+      document.querySelector('[name="telefono"]').value = cliente.telefono || '';
+      document.querySelector('[name="email"]').value = cliente.email || '';
+      document.querySelector('[name="direccion"]').value = cliente.direccion || '';
+      cerrarModalBuscarCliente();
+    }
+
+    // --- RESTO DE TU JS ORIGINAL ---
+    function getFormattedFechaHora() {
+      const now = new Date();
+      const dd = String(now.getDate()).padStart(2, '0');
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const yyyy = now.getFullYear();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      return `${dd}/${mm}/${yyyy} ${hh}:${min}`;
+    }
+    function asignarNumeroOrden() {
+      const numeroOrden = obtenerSiguienteNumeroOrden();
+      document.getElementById('numeroOrden').textContent = numeroOrden;
+      let campoOrden = document.querySelector('[name="numero_orden"]');
+      if (!campoOrden) {
+        campoOrden = document.createElement('input');
+        campoOrden.type = "hidden";
+        campoOrden.name = "numero_orden";
+        document.getElementById('recepcionForm').appendChild(campoOrden);
+      }
+      campoOrden.value = numeroOrden;
+    }
+    function obtenerSiguienteNumeroOrden() {
+      let ultimo = localStorage.getItem('servitecnet_ultimo_numero_orden');
+      let siguiente = ultimo ? parseInt(ultimo, 10) + 1 : 1;
+      localStorage.setItem('servitecnet_ultimo_numero_orden', siguiente);
+      return "ORD-" + String(siguiente).padStart(4, '0');
+    }
+    function actualizarFechaRecepcion() {
+      const fechaHora = getFormattedFechaHora();
+      document.getElementById('fechaRecepcionInput').value = fechaHora;
+    }
+    function mostrarOtraRam() {
+      var select = document.getElementById('capacidad_ram');
+      var otra = document.getElementById('otra_ram');
+      if (select.value === "otro") {
+        otra.style.display = "inline-block";
+        otra.required = true;
+      } else {
+        otra.style.display = "none";
+        otra.required = false;
+      }
+    }
+    function mostrarOtraCapacidad() {
+      var sel = document.getElementById('capacidad_almacenamiento');
+      var otra = document.getElementById('otra_capacidad');
+      var unidad = document.getElementById('otra_capacidad_unidad');
+      if (sel.value === "otro") {
+        otra.style.display = "inline-block";
+        otra.required = true;
+        unidad.style.display = "inline-block";
+        unidad.required = true;
+      } else {
+        otra.style.display = "none";
+        otra.required = false;
+        unidad.style.display = "none";
+        unidad.required = false;
+      }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      asignarNumeroOrden();
+      actualizarFechaRecepcion();
+      setInterval(actualizarFechaRecepcion, 60000);
+    });
+    document.getElementById('recepcionForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      let datos = {};
+      Array.from(e.target.elements).forEach(el => {
+        if (el.name && el.value && el.type !== "button") datos[el.name] = el.value;
+        if (el.type === "checkbox") datos[el.name] = el.checked;
+      });
+      datos.fecha_recepcion = document.getElementById('fechaRecepcionInput').value;
+      fetch('/api/recepcion', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(datos)
+      }).then(res => res.json())
+      .then(data => {
+        if(data.ok) {
+          document.getElementById('alerta').textContent = "¡Recepción registrada exitosamente!";
+          setTimeout(() => { document.getElementById('alerta').textContent = ""; }, 4000);
+          e.target.reset();
+          asignarNumeroOrden();
+          actualizarFechaRecepcion();
+        } else {
+          document.getElementById('alerta').textContent = "Error al registrar recepción.";
+        }
+      });
+    });
+    // --- DESCARGAR PDF MEJORADO Y FUNCIONAL ---
+    function descargarPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      function renderPDF(logoBase64) {
+        if (logoBase64) {
+          doc.addImage(logoBase64, 'PNG', 160, 5, 35, 15);
+        }
+        doc.setFontSize(18);
+        doc.text('Recepción de Equipo', 15, 18);
+
+        let y = 30;
+
+        // Datos del Personal
+        doc.setFontSize(12);
+        doc.text('Datos del Personal:', 10, y);
+        y += 10;
+        doc.setFontSize(10);
+        doc.text('Personal que atendió: ' + (document.getElementById('personal_atencion').value || ''), 12, y);
+        y += 16;
+
+        // Datos del Cliente
+        doc.setFontSize(12);
+        doc.text('Datos del Cliente:', 10, y);
+        y += 10;
+        doc.setFontSize(10);
+        doc.text(`Tipo documento: ${document.querySelector('[name="tipo_documento"]').value}`, 12, y);
+        doc.text(`Número documento: ${document.querySelector('[name="numero_documento"]').value}`, 90, y);
+        y += 10;
+        doc.text(`Nombres: ${document.querySelector('[name="nombres"]').value}`, 12, y);
+        doc.text(`Apellidos: ${document.querySelector('[name="apellidos"]').value}`, 90, y);
+        y += 10;
+        doc.text(`Teléfono: ${document.querySelector('[name="telefono"]').value}`, 12, y);
+        doc.text(`Email: ${document.querySelector('[name="email"]').value}`, 90, y);
+        y += 10;
+        doc.text(`Dirección: ${document.querySelector('[name="direccion"]').value}`, 12, y);
+        y += 18;
+
+        // Datos del Equipo
+        doc.setFontSize(12);
+        doc.text('Datos del Equipo:', 10, y);
+        y += 10;
+        doc.setFontSize(10);
+        doc.text(`Tipo equipo: ${document.querySelector('[name="tipo_equipo"]').value}`, 12, y);
+        doc.text(`Modelo: ${document.querySelector('[name="modelo"]').value}`, 90, y);
+        y += 10;
+        doc.text(`Serie: ${document.querySelector('[name="serie"]').value}`, 12, y);
+        y += 10;
+        doc.text(`Descripción problema: ${document.querySelector('[name="descripcion_problema"]').value}`, 12, y);
+        y += 18;
+
+        // Estado del Equipo
+        doc.setFontSize(12);
+        doc.text('Estado del Equipo:', 10, y);
+        y += 10;
+        doc.setFontSize(10);
+        doc.text(`Estado físico: ${document.querySelector('[name="estado_fisico"]').value}`, 12, y);
+        doc.text(`Observaciones estado físico: ${document.querySelector('[name="obs_estado_fisico"]').value}`, 90, y);
+        y += 18;
+
+        // Componentes Incluidos
+        doc.setFontSize(12);
+        doc.text('Componentes Incluidos:', 10, y);
+        y += 10;
+        doc.setFontSize(10);
+        doc.text(`Procesador: ${document.querySelector('[name="tipo_procesador"]').value} ${document.querySelector('[name="numero_procesador"]').value}`, 12, y);
+        doc.text(`Memoria RAM: ${document.querySelector('[name="capacidad_ram"]').value === "otro" 
+          ? document.getElementById('otra_ram').value
+          : document.querySelector('[name="capacidad_ram"]').value} ${document.querySelector('[name="tipo_ram"]').value}`, 90, y);
+        y += 10;
+        doc.text(
+          `Tarjeta gráfica: ${document.querySelector('[name="tipo_grafica"]').value} ${document.querySelector('[name="numero_grafica"]').value}` +
+          ` - VRAM: ${document.querySelector('[name="vram_grafica"]').value} - Marca: ${document.querySelector('[name="marca_grafica"]').value}`,
+          12, y
+        );
+        y += 10;
+        let capacidadAlmacenamiento = document.querySelector('[name="capacidad_almacenamiento"]').value;
+        if (capacidadAlmacenamiento === "otro") {
+          capacidadAlmacenamiento = document.getElementById('otra_capacidad').value + ' ' + document.getElementById('otra_capacidad_unidad').value;
+        }
+        doc.text(`Almacenamiento: ${document.querySelector('[name="tipo_almacenamiento"]').value} ${capacidadAlmacenamiento}`, 12, y);
+        y += 10;
+
+        // Componentes adicionales
+        const cargador = document.querySelector('[name="cargador"]').checked ? 'Sí' : 'No';
+        const mouse = document.querySelector('[name="mouse"]').checked ? 'Sí' : 'No';
+        const teclado = document.querySelector('[name="teclado"]').checked ? 'Sí' : 'No';
+        const funda = document.querySelector('[name="funda"]').checked ? 'Sí' : 'No';
+        const otrosComponentes = document.querySelector('[name="otros_componentes"]').checked ? 'Sí' : 'No';
+        doc.text(`Cargador: ${cargador}  Mouse: ${mouse}  Teclado: ${teclado}  Funda: ${funda}  Otros: ${otrosComponentes}`, 12, y);
+        y += 10;
+        doc.text(`Observaciones: ${document.querySelector('[name="observaciones"]').value}`, 12, y);
+        y += 18;
+
+        // Registro
+        doc.setFontSize(12);
+        doc.text('Registro:', 10, y);
+        y += 10;
+        doc.setFontSize(10);
+        doc.text(`Fecha de recepción: ${document.getElementById('fechaRecepcionInput').value}`, 12, y);
+        doc.text(`N° de Orden: ${document.getElementById('numeroOrden').textContent}`, 90, y);
+
+        // Espacio antes de firmas
+        y += 25;
+
+        // Líneas para firmas (centradas en página)
+        doc.setLineWidth(0.5);
+        doc.line(30, y, 90, y);
+        doc.text('Firma de recepción', 60, y + 6, {align:'center'});
+        doc.line(120, y, 180, y);
+        doc.text('Firma del cliente', 150, y + 6, {align:'center'});
+
+        // Pie de página debajo de área de firma
+        y += 18;
+        doc.setFontSize(9);
+        doc.text('Servitec NET - MZ E LOTE 32 ANCIETA ALTA - EL AGUSTINO - Email: experto.sistemasti@gmail.com - Tel: 922657185', 105, y, {align: 'center'});
+
+        doc.save('recepcion.pdf');
+      }
+
+      // Obtener base64 del logo
+      const logoImg = document.getElementById('logoEmpresa');
+      if (logoImg && logoImg.complete) {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = logoImg.naturalWidth;
+          canvas.height = logoImg.naturalHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(logoImg, 0, 0);
+          const logoBase64 = canvas.toDataURL('image/png');
+          renderPDF(logoBase64);
+        } catch (e) {
+          renderPDF(null);
+        }
+      } else {
+        renderPDF(null);
+      }
+    }
+
+    fetch('/api/yo')
+      .then(res => res.json())
+      .then(data => {
+        if(data.es_admin) document.getElementById('btnVerHistorial').style.display = "block";
+      });
+    function verHistorial() {
+      window.location.href = '/recepciones.html';
+    }
+    function cerrarSesion() {
+      fetch('/api/logout', { method: 'POST' })
+        .then(() => window.location.href = "login.html");
+    }
+  </script>
+</body>
+</html>

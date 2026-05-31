@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Explorador de Archivos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Iconos (Material Icons) -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: url('fondo-servitec.jpg') no-repeat center center fixed;
+      background-size: cover;
+      position: relative;
+      min-height: 100vh;
+      color: #fff;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15,50,40,0.75);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .archivos-container {
+      position: relative;
+      z-index: 1;
+      width: 96vw;
+      max-width: 800px;
+      margin: 60px auto 0 auto;
+      background: rgba(25,27,35, 0.92);
+      border-radius: 13px;
+      box-shadow: 0 8px 36px rgba(0,0,0,0.27);
+      padding: 28px 0 10px 0;
+      border: 2px solid #40ffb7;
+    }
+    h2 {
+      color: #40ffb7;
+      text-align: center;
+      margin-bottom: 8px;
+      font-weight: bold;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 12px #0007;
+    }
+    .ruta-actual {
+      color: #b2ffda;
+      margin: 0 1.2em 18px 1.2em;
+      font-size: 1.01em;
+      letter-spacing: 0.02em;
+      word-break: break-all;
+    }
+    .ruta-actual span {
+      color: #40ffb7;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-right: 3px;
+    }
+    .archivo-row {
+      display: flex;
+      align-items: center;
+      background: #232323;
+      margin: 0 1.2em 8px 1.2em;
+      padding: 10px 15px;
+      border-radius: 7px;
+      box-shadow: 0 2px 8px #0002;
+      transition: background 0.19s;
+      font-size: 1.04em;
+      font-weight: 500;
+    }
+    .archivo-row:not(:last-child) {
+      border-bottom: 2px solid #161d18;
+    }
+    .archivo-row .material-icons {
+      margin-right: 10px;
+      font-size: 1.23em;
+      vertical-align: middle;
+    }
+    .archivo-name {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 0 2px 8px #0009;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      user-select: none;
+    }
+    .archivo-name.archivo { cursor: default; }
+    .archivo-size {
+      margin-right: 18px;
+      background: #282828;
+      color: #b2ffda;
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 0.93em;
+      font-weight: bold;
+      min-width: 58px;
+      text-align: right;
+      box-shadow: 0 1px 6px #40ffb745;
+      border: 1px solid #40ffb7;
+    }
+    .archivo-btn {
+      border: none;
+      background: none;
+      cursor: pointer;
+      margin-left: 6px;
+      margin-right: 3px;
+      transition: transform 0.15s;
+      outline: none;
+    }
+    .archivo-btn:hover {
+      transform: scale(1.16);
+    }
+    .archivo-btn.descargar {
+      color: #00e676;
+      background: #161d18;
+      border-radius: 50%;
+      padding: 4px;
+    }
+    .archivo-btn.eliminar {
+      color: #ff1744;
+      background: #2e171a;
+      border-radius: 50%;
+      padding: 4px;
+    }
+    .archivo-btn.descargar:hover {
+      background: #40ffb7;
+      color: #1976d2;
+    }
+    .archivo-btn.eliminar:hover {
+      background: #ff1744;
+      color: #fff;
+    }
+    .archivo-btn[disabled] {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    .sin-archivos {
+      color: #fff;
+      text-align: center;
+      margin: 2.5em 0 2em 0;
+      font-size: 1.03em;
+      letter-spacing: 0.02em;
+      text-shadow: 0 1px 8px #1976d299;
+    }
+    .modal-bg {
+      display: none;
+      position: fixed;
+      z-index: 4000;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(19,40,29,0.78);
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(3px);
+    }
+    .modal-bg.active { display: flex; }
+    .modal-box {
+      background: #222c23;
+      border-radius: 13px;
+      box-shadow: 0 8px 46px rgba(0,0,0,0.38);
+      min-width: 295px;
+      width: 96vw;
+      max-width: 420px;
+      position: relative;
+      border: 2px solid #2bffb8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 18px 22px 18px;
+    }
+    .modal-close {
+      position: absolute;
+      top: 13px; right: 18px;
+      background: none;
+      border: none;
+      color: #b0e7d0;
+      font-size: 1.4em;
+      cursor: pointer;
+      font-weight: bold;
+      z-index: 2;
+      transition: color 0.18s;
+    }
+    .modal-close:hover {
+      color: #ff5656;
+    }
+    .modal-box textarea {
+      width: 98%;
+      min-height: 90px;
+      margin-top: 9px;
+      font-size: 1.05em;
+      border-radius: 7px;
+      border: 1.5px solid #40ffb7;
+      padding: 8px;
+      background: #1a2320;
+      color: #b1ffe6;
+    }
+    .modal-box button {
+      margin-top: 12px;
+      padding: 8px 22px;
+      border-radius: 6px;
+      border: none;
+      background: #40ffb7;
+      color: #181f1b;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.17s, color 0.17s;
+      box-shadow: 0 2px 8px #1976d265;
+    }
+    .modal-box button:hover {
+      background: #1976d2;
+      color: #fff;
+      box-shadow: 0 0 12px #1976d2b3;
+    }
+    .modal-box label {
+      color: #40ffb7;
+      font-weight: bold;
+      margin-bottom: 7px;
+      font-size: 1.08em;
+      display: block;
+      margin-top: 8px;
+    }
+    @media (max-width: 600px) {
+      .archivos-container { max-width: 99vw; padding-left: 0; padding-right: 0; }
+      .archivo-row { font-size: 0.98em; margin-left: 2vw; margin-right: 2vw; flex-direction: column; align-items: flex-start; gap: 4px; }
+      .archivo-size { margin: 4px 0 0 0; }
+      .archivo-btn { margin-left: 0; }
+    }
+    @media (max-width: 400px) {
+      .archivo-row { padding: 7px 2px; }
+      .archivos-container { padding: 5px 0 5px 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="archivos-container">
+    <h2>Explorador de Archivos</h2>
+    <div id="ruta" class="ruta-actual"></div>
+    <div id="lista-archivos"></div>
+  </div>
+  <!-- Modal edición comentario solución -->
+  <div class="modal-bg" id="modalSolucion">
+    <div class="modal-box">
+      <button class="modal-close" onclick="cerrarModalSolucion()" title="Cerrar">&times;</button>
+      <label for="txtSolucion">Comentario de solución y proceso realizado:</label>
+      <textarea id="txtSolucion"></textarea>
+      <button onclick="guardarSolucion()">Guardar</button>
+    </div>
+  </div>
+  <script>
+    let rutaActual = '/';
+    let esAdmin = false;
+    let idEdicionSolucion = null;
+    function verificarAdmin() {
+      return fetch('/api/yo')
+        .then(res => res.json())
+        .then(data => {
+          esAdmin = !!data.es_admin;
+        });
+    }
+    function cargarArchivos(ruta = '/') {
+      rutaActual = ruta;
+      fetch(`/api/archivos?ruta=${encodeURIComponent(ruta)}`)
+        .then(res => res.json())
+        .then(data => {
+          mostrarRutaNavegable(ruta);
+          const cont = document.getElementById('lista-archivos');
+          if(!data.ok || !data.archivos || data.archivos.length === 0) {
+            cont.innerHTML = `<div class="sin-archivos">No hay archivos/carpeta aquí</div>`;
+            return;
+          }
+          let html = '';
+          data.archivos.forEach(archivo => {
+            if(archivo.tipo === 'carpeta') {
+              html += `
+              <div class="archivo-row">
+                <span class="archivo-name" onclick="cargarArchivos('${archivo.ruta}')">
+                  <span class="material-icons" style="color:#40ffb7">folder</span>
+                  ${archivo.nombre}
+                </span>
+                <span class="archivo-size">${archivo.tamano || ''}</span>
+                <button class="archivo-btn descargar" title="Descargar carpeta (zip)" onclick="descargarArchivo('${archivo.ruta}', true)">
+                  <span class="material-icons">folder_zip</span>
+                </button>
+                ${esAdmin ? `
+                  <button class="archivo-btn eliminar" title="Eliminar carpeta" onclick="eliminarArchivo('${archivo.ruta}', this, true)">
+                    <span class="material-icons">delete</span>
+                  </button>
+                ` : ''}
+              </div>
+              `;
+            } else {
+              html += `
+              <div class="archivo-row">
+                <span class="archivo-name archivo">
+                  <span class="material-icons" style="color:#b2ffda">description</span>
+                  ${archivo.nombre}
+                </span>
+                <span class="archivo-size">${archivo.tamano || ''}</span>
+                <button class="archivo-btn descargar" title="Descargar" onclick="descargarArchivo('${archivo.ruta}', false)">
+                  <span class="material-icons">download</span>
+                </button>
+                ${esAdmin ? `
+                  <button class="archivo-btn eliminar" title="Eliminar archivo" onclick="eliminarArchivo('${archivo.ruta}', this, false)">
+                    <span class="material-icons">delete</span>
+                  </button>
+                ` : ''}
+              </div>
+              `;
+            }
+          });
+          cont.innerHTML = html;
+        });
+    }
+    function mostrarRutaNavegable(ruta) {
+      const partes = ruta === '/' ? [] : ruta.split('/').filter(Boolean);
+      let html = `<span onclick="cargarArchivos('/')"><b>Raíz</b></span>`;
+      let pathAcum = '';
+      partes.forEach((parte, idx) => {
+        pathAcum += '/' + parte;
+        html += ` / <span onclick="cargarArchivos('${pathAcum}')">${parte}</span>`;
+      });
+      document.getElementById('ruta').innerHTML = html;
+    }
+    function descargarArchivo(ruta, esCarpeta) {
+      window.open(`/api/archivo-descargar?ruta=${encodeURIComponent(ruta)}${esCarpeta ? '&carpeta=1' : ''}`, '_blank');
+    }
+    function eliminarArchivo(ruta, btn, esCarpeta) {
+      if(!esAdmin) return alert('Solo admin puede eliminar.');
+      if(!confirm(`¿Seguro que deseas eliminar este ${esCarpeta ? 'carpeta y todo su contenido' : 'archivo'}?`)) return;
+      fetch(`/api/archivo-eliminar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ruta, carpeta: !!esCarpeta })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.ok) {
+          btn.closest('.archivo-row').remove();
+        } else {
+          alert('No se pudo eliminar');
+        }
+      });
+    }
+    // MODAL SOLUCIÓN
+    function abrirModalSolucion(id) {
+      idEdicionSolucion = id;
+      // Obtener solución actual desde la API
+      fetch(`/api/recepciones/${id}`)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('txtSolucion').value = data && data.recepcion && data.recepcion.solucion ? data.recepcion.solucion : '';
+          document.getElementById('modalSolucion').classList.add('active');
+        });
+    }
+    function cerrarModalSolucion() {
+      document.getElementById('modalSolucion').classList.remove('active');
+      idEdicionSolucion = null;
+    }
+    function guardarSolucion() {
+      const solucion = document.getElementById('txtSolucion').value.trim();
+      if (!idEdicionSolucion) return;
+      fetch(`/api/recepciones/${idEdicionSolucion}/solucion`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ solucion })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          cerrarModalSolucion();
+        } else {
+          alert('No se pudo guardar la solución');
+        }
+      })
+      .catch(() => alert('Error al guardar la solución'));
+    }
+    verificarAdmin().then(()=>cargarArchivos('/'));
+  </script>
+</body>
+</html>

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Administrar Usuarios - Servitec NET</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: url('fondo-servitec.jpg') no-repeat center center fixed;
+      background-size: cover;
+      position: relative;
+      overflow: hidden;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15,50,40,0.67);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .usuarios-container {
+      position: relative;
+      z-index: 1;
+      min-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 60px;
+    }
+    .usuarios-glass {
+      background: rgba(25,27,35, 0.89);
+      border-radius: 17px;
+      box-shadow: 0 8px 32px 0 rgba(0,0,0,0.28);
+      padding: 26px 35px 30px 35px;
+      min-width: 340px;
+      width: 96vw;
+      max-width: 700px;
+      margin: 0 auto;
+      border: 2px solid #40ffb7;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .usuarios-glass h2 {
+      color: #fff;
+      text-align: center;
+      font-size: 2.1em;
+      font-weight: bold;
+      margin: 0 0 18px 0;
+      letter-spacing: 0.03em;
+      text-shadow: 0 2px 18px #0007;
+    }
+    .usuarios-glass .cerrar-sesion {
+      background: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 8px 24px;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 18px;
+      align-self: flex-end;
+      transition: background 0.16s, color 0.16s, box-shadow 0.16s;
+      box-shadow: 0 2px 14px #1976d265;
+    }
+    .usuarios-glass .cerrar-sesion:hover {
+      background: #40ffb7;
+      color: #1976d2;
+      box-shadow: 0 0 16px #40ffb7b2;
+    }
+    .usuarios-btn-row {
+      display: flex;
+      gap: 8px;
+      margin: 0 0 16px 0;
+      flex-wrap: wrap;
+    }
+    .usuarios-btn-row .btn {
+      background: #40ffb7;
+      color: #181f1b;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 18px;
+      font-size: 1.08em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.16s, color 0.16s;
+      box-shadow: 0 2px 10px #1976d265;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .usuarios-btn-row .btn:hover {
+      background: #1976d2;
+      color: #fff;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: none;
+      color: #e0fff6;
+      font-size: 1.08em;
+      margin-bottom: 8px;
+    }
+    th, td {
+      padding: 10px 8px;
+      text-align: left;
+      border-bottom: 1px solid #2bffb8;
+    }
+    th {
+      background: rgba(64,255,183,0.11);
+      color: #40ffb7;
+      font-size: 1.09em;
+      font-weight: bold;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid #40ffb7;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .acciones-btn {
+      display: flex;
+      gap: 7px;
+    }
+    .acciones-btn button {
+      padding: 4px 13px;
+      background: #40ffb7;
+      color: #181f1b;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.99em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.17s, color 0.17s, box-shadow 0.17s;
+      box-shadow: 0 2px 8px #1976d265;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .acciones-btn button:hover {
+      background: #1976d2;
+      color: #fff;
+      box-shadow: 0 0 12px #1976d2b3;
+    }
+    .acciones-btn .material-icons {
+      vertical-align: middle;
+    }
+    .no-usuarios {
+      color: #fff;
+      font-size: 1.09em;
+      margin: 1.6em auto 1.1em auto;
+      text-align: center;
+      letter-spacing: 0.02em;
+      text-shadow: 0 2px 16px #0006;
+    }
+    /* Responsive: tabla como tarjetas en mobile */
+    @media (max-width: 700px) {
+      .usuarios-glass { padding: 10px 4px; }
+      .usuarios-glass h2 { font-size: 1.3em; }
+      table, thead, tbody, th, td, tr {
+        display: block;
+        width: 100%;
+      }
+      thead { display: none; }
+      tr {
+        background: rgba(35, 46, 40, 0.7);
+        margin-bottom: 12px;
+        border-radius: 9px;
+        box-shadow: 0 1px 8px #0002;
+        padding: 7px 4px;
+      }
+      td {
+        position: relative;
+        padding-left: 47%;
+        text-align: left;
+        min-height: 28px;
+        white-space: pre-line;
+        border: none;
+        border-bottom: 1px solid #444;
+        box-sizing: border-box;
+        font-size: 0.98em;
+      }
+      td:before {
+        position: absolute;
+        left: 11px;
+        width: 44%;
+        white-space: pre-wrap;
+        font-weight: bold;
+        color: #40ffb7;
+        content: attr(data-label);
+      }
+      .acciones-btn { flex-wrap: wrap; gap: 4px; }
+    }
+    /* Modal */
+    .modal-bg {
+      position: fixed;
+      z-index: 2000;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(19,40,29,0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(3px);
+    }
+    .modal-bg.active { display: flex; }
+    .modal-box {
+      background: rgba(25,27,35, 0.94);
+      border-radius: 17px;
+      box-shadow: 0 8px 46px rgba(0,0,0,0.38);
+      padding: 0 0 22px 0;
+      min-width: 295px;
+      width: 96vw;
+      max-width: 380px;
+      position: relative;
+      border: 2px solid #2bffb8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .modal-close {
+      position: absolute;
+      top: 13px; right: 18px;
+      background: none;
+      border: none;
+      color: #b0e7d0;
+      font-size: 1.4em;
+      cursor: pointer;
+      font-weight: bold;
+      z-index: 2;
+      transition: color 0.18s;
+    }
+    .modal-close:hover {
+      color: #ff5656;
+    }
+    .modal-form {
+      width: 92%;
+      margin: 36px auto 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .modal-form h3 {
+      text-align: center;
+      color: #fff;
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-bottom: 1.2em;
+      letter-spacing: 0.02em;
+      font-family: inherit;
+      text-shadow: 0 2px 12px #0007;
+    }
+    .modal-group {
+      margin-bottom: 1.4em;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .modal-group label {
+      color: #fff;
+      font-weight: bold;
+      margin-bottom: 0.37em;
+      font-size: 1em;
+      letter-spacing: 0.01em;
+    }
+    .modal-group input,
+    .modal-group select {
+      padding: 10px 12px;
+      border-radius: 7px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      font-size: 1.04em;
+      box-shadow: 0 1.5px 8px #0001;
+      border: 1.5px solid #242e2b;
+    }
+    .modal-group input:focus,
+    .modal-group select:focus {
+      background: rgba(255,255,255,0.22);
+      color: #fff;
+      border: 1.5px solid #40ffb7;
+    }
+    .btn-modal {
+      margin-top: 0.7em;
+      width: 100%;
+      padding: 13px 0;
+      border-radius: 9px;
+      border: none;
+      background: #40ffb7;
+      color: #181f1b;
+      font-size: 1.07em;
+      font-weight: bold;
+      letter-spacing: 0.05em;
+      box-shadow: 0 4px 18px #1976d2a0;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    }
+    .btn-modal:hover {
+      background: #1976d2;
+      color: #fff;
+      box-shadow: 0 0 20px 3px #40ffb7b5;
+    }
+    .msg-modal {
+      color: #e53935;
+      margin-bottom: 1em;
+      min-height: 1.3em;
+      font-weight: bold;
+      letter-spacing: 0.03em;
+      text-shadow: 0 1px 6px #fff9;
+      text-align: center;
+    }
+    .msg-modal.success {
+      color: #40ffb7;
+    }
+  </style>
+</head>
+<body>
+  <div class="usuarios-container">
+    <div class="usuarios-glass">
+      <button class="cerrar-sesion" onclick="logout()">Cerrar sesión</button>
+      <h2>Administrar Usuarios</h2>
+      <div class="usuarios-btn-row">
+        <button class="btn" onclick="cargarUsuarios()">
+          <span class="material-icons">refresh</span>Actualizar Lista
+        </button>
+        <button class="btn" onclick="window.location.href='index.html'">
+          <span class="material-icons">list_alt</span>Ir a Recepciones
+        </button>
+        <button class="btn" onclick="abrirModalAgregarUsuario()">
+          <span class="material-icons">person_add</span>Agregar usuario
+        </button>
+      </div>
+      <div id="usuarios-lista"></div>
+    </div>
+  </div>
+
+  <!-- Modal Cambiar Contraseña por Admin -->
+  <div class="modal-bg" id="cambiarPassModal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="cerrarModalCambiarPass()" title="Cerrar">&times;</button>
+      <form class="modal-form" onsubmit="cambiarPasswordAdmin(event);return false;">
+        <h3>Cambiar Contraseña de Usuario</h3>
+        <div class="modal-group">
+          <label for="adminUsuario">ID Admin</label>
+          <input type="text" id="adminUsuario" required>
+        </div>
+        <div class="modal-group">
+          <label for="adminPassword">Contraseña Admin</label>
+          <input type="password" id="adminPassword" required>
+        </div>
+        <div class="modal-group">
+          <label for="targetUsuario">ID Usuario</label>
+          <input type="text" id="targetUsuario" required readonly>
+        </div>
+        <div class="modal-group">
+          <label for="nuevoPassword">Nueva contraseña</label>
+          <input type="password" id="nuevoPassword" required>
+        </div>
+        <div class="msg-modal" id="msgCambiarPass"></div>
+        <button type="submit" class="btn-modal">Cambiar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Agregar Usuario -->
+  <div class="modal-bg" id="agregarUsuarioModal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="cerrarModalAgregarUsuario()" title="Cerrar">&times;</button>
+      <form class="modal-form" onsubmit="agregarUsuario(event);return false;">
+        <h3>Agregar Nuevo Usuario</h3>
+        <div class="modal-group">
+          <label for="nuevoUsuarioId">ID de Usuario</label>
+          <input type="text" id="nuevoUsuarioId" required>
+        </div>
+        <div class="modal-group">
+          <label for="nuevoUsuarioPass">Contraseña</label>
+          <input type="password" id="nuevoUsuarioPass" required>
+        </div>
+        <div class="modal-group">
+          <label for="nuevoUsuarioAdmin">Tipo de usuario</label>
+          <select id="nuevoUsuarioAdmin">
+            <option value="0">Usuario normal</option>
+            <option value="1">Administrador</option>
+          </select>
+        </div>
+        <div class="msg-modal" id="msgAgregarUsuario"></div>
+        <button type="submit" class="btn-modal">Agregar</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      fetch('/api/logout', {method:'POST'})
+        .then(()=>window.location.href='login.html');
+    }
+
+    function cargarUsuarios() {
+      fetch('/api/usuarios')
+        .then(res=>res.json())
+        .then(data=>{
+          const cont = document.getElementById('usuarios-lista');
+          if(!data.ok || !data.usuarios || data.usuarios.length===0) {
+            cont.innerHTML = '<div class="no-usuarios">No hay usuarios registrados.</div>';
+            return;
+          }
+          let html = `<table>
+            <thead>
+              <tr>
+                <th>ID de usuario</th>
+                <th>Admin</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>`;
+          data.usuarios.forEach(u=>{
+            html += `<tr>
+              <td data-label="ID de usuario">${u.usuario}</td>
+              <td data-label="Admin">${u.es_admin ? '<span style="color:#40ffb7;font-weight:bold;">Sí</span>' : 'No'}
+                  ${u.usuario==='104958' ? '<span style="color:#ff5656;font-weight:bold;"> (Principal)</span>' : ''}
+              </td>
+              <td data-label="Acciones" class="acciones-btn">
+                <button onclick="eliminarUsuario('${u.usuario}')">
+                  <span class="material-icons" title="Eliminar">delete</span>
+                </button>
+                <button onclick="toggleAdmin('${u.usuario}',${u.es_admin})">
+                  <span class="material-icons" title="Cambiar admin">${u.es_admin ? 'admin_panel_settings' : 'supervisor_account'}</span>
+                </button>
+                <button onclick="abrirModalCambiarPass('${u.usuario}')">
+                  <span class="material-icons" title="Cambiar contraseña">vpn_key</span>
+                  Cambiar contraseña
+                </button>
+              </td>
+            </tr>`;
+          });
+          html += '</tbody></table>';
+          cont.innerHTML = html;
+        });
+    }
+
+    function eliminarUsuario(usuario) {
+      if(usuario==='104958') return alert('No puedes eliminar el administrador principal.');
+      if(!confirm('¿Seguro que deseas eliminar el usuario '+usuario+'?')) return;
+      fetch('/api/eliminar-usuario', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({usuario})
+      }).then(res=>res.json())
+      .then(data=>{
+        if(data.ok) cargarUsuarios();
+        else alert(data.error||'No se pudo eliminar.');
+      });
+    }
+
+    function toggleAdmin(usuario, esAdmin) {
+      if(usuario==='104958') return alert('No puedes modificar el administrador principal.');
+      fetch('/api/cambiar-admin', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({usuario, es_admin:!esAdmin})
+      }).then(res=>res.json())
+      .then(data=>{
+        if(data.ok) cargarUsuarios();
+        else alert(data.error||'No se pudo cambiar estado.');
+      });
+    }
+
+    // Modal para cambiar contraseña (por admin)
+    function abrirModalCambiarPass(usuario) {
+      document.getElementById('cambiarPassModal').classList.add('active');
+      document.getElementById('msgCambiarPass').textContent = "";
+      document.getElementById('adminUsuario').value = "";
+      document.getElementById('adminPassword').value = "";
+      document.getElementById('nuevoPassword').value = "";
+      document.getElementById('targetUsuario').value = usuario || "";
+    }
+    function cerrarModalCambiarPass() {
+      document.getElementById('cambiarPassModal').classList.remove('active');
+    }
+    function cambiarPasswordAdmin(event) {
+      event.preventDefault();
+      const adminUsuario = document.getElementById('adminUsuario').value.trim();
+      const adminPassword = document.getElementById('adminPassword').value;
+      const targetUsuario = document.getElementById('targetUsuario').value.trim();
+      const nuevoPassword = document.getElementById('nuevoPassword').value;
+
+      if (!adminUsuario || !adminPassword || !targetUsuario || !nuevoPassword) {
+        document.getElementById('msgCambiarPass').textContent = "Completa todos los campos.";
+        return;
+      }
+
+      fetch('/api/admin-reset-password', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({adminUsuario, adminPassword, targetUsuario, nuevoPassword})
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          document.getElementById('msgCambiarPass').textContent = "Contraseña cambiada correctamente.";
+          document.getElementById('msgCambiarPass').classList.add('success');
+          setTimeout(()=>{
+            cerrarModalCambiarPass();
+            document.getElementById('msgCambiarPass').classList.remove('success');
+          }, 1400);
+        } else {
+          document.getElementById('msgCambiarPass').textContent = data.error || "Error al cambiar.";
+        }
+      })
+      .catch(() => {
+        document.getElementById('msgCambiarPass').textContent = "Error de conexión.";
+      });
+    }
+
+    // --- MODAL AGREGAR USUARIO ---
+    function abrirModalAgregarUsuario() {
+      document.getElementById('agregarUsuarioModal').classList.add('active');
+      document.getElementById('nuevoUsuarioId').value = "";
+      document.getElementById('nuevoUsuarioPass').value = "";
+      document.getElementById('nuevoUsuarioAdmin').value = "0";
+      document.getElementById('msgAgregarUsuario').textContent = "";
+      document.getElementById('msgAgregarUsuario').classList.remove('success');
+    }
+    function cerrarModalAgregarUsuario() {
+      document.getElementById('agregarUsuarioModal').classList.remove('active');
+    }
+    function agregarUsuario(event) {
+      event.preventDefault();
+      const usuario = document.getElementById('nuevoUsuarioId').value.trim();
+      const password = document.getElementById('nuevoUsuarioPass').value;
+      const es_admin = document.getElementById('nuevoUsuarioAdmin').value === "1";
+      if (!usuario || !password) {
+        document.getElementById('msgAgregarUsuario').textContent = "Completa todos los campos.";
+        return;
+      }
+      fetch('/api/crear-usuario', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({usuario, password, es_admin})
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          document.getElementById('msgAgregarUsuario').textContent = "Usuario creado correctamente.";
+          document.getElementById('msgAgregarUsuario').classList.add('success');
+          cargarUsuarios();
+          setTimeout(()=>{
+            cerrarModalAgregarUsuario();
+            document.getElementById('msgAgregarUsuario').classList.remove('success');
+          }, 1200);
+        } else {
+          document.getElementById('msgAgregarUsuario').textContent = data.error || "No se pudo crear el usuario.";
+        }
+      })
+      .catch(() => {
+        document.getElementById('msgAgregarUsuario').textContent = "Error de conexión.";
+      });
+    }
+
+    // Solo admin puede ver la página
+    fetch('/api/yo').then(res=>res.json()).then(data=>{
+      if(!data.usuario || !data.es_admin) window.location.href="login.html";
+      else cargarUsuarios();
+    });
+  </script>
+</body>
+</html>

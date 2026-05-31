@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Inicio - Servitec NET</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: url('fondo-servitec.jpg') no-repeat center center fixed;
+      background-size: cover;
+      position: relative;
+      overflow: hidden;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15,50,40,0.67);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .main-content {
+      position: relative;
+      z-index: 1;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+    }
+    .top-bar {
+      width: 90%;
+      max-width: 900px;
+      margin: 30px auto 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(14, 59, 36, 0.45);
+      border: 1.5px solid #40ffb7;
+      border-radius: 16px;
+      padding: 0.7em 1.5em;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+      backdrop-filter: blur(7px);
+      position: relative;
+    }
+    .top-bar .logo-bar {
+      display: flex;
+      align-items: center;
+    }
+    .logo-bar img {
+      height: 26px;
+      margin-right: 7px;
+    }
+    .logo-bar span {
+      font-size: 1.13em;
+      color: #fff;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 3px #001f10;
+    }
+    .login-dropdown-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+    .login-btn {
+      color: #40ffb7;
+      font-size: 1.03em;
+      background: none;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 7px 18px 7px 7px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      transition: background 0.2s;
+      position: relative;
+      z-index: 2;
+      outline: none;
+    }
+    .login-btn:hover, .login-btn:focus {
+      background: rgba(64,255,183,0.11);
+    }
+    .login-btn i {
+      font-size: 1.5em;
+      margin-left: 5px;
+      transition: transform 0.25s cubic-bezier(.51,1.64,.41,.8);
+    }
+    .login-dropdown-wrapper:focus-within .login-btn i,
+    .login-dropdown-wrapper:hover .login-btn i {
+      transform: rotate(90deg) scale(1.18);
+    }
+    .login-dropdown-menu {
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 7px);
+      min-width: 200px;
+      background: rgba(22,36,32,0.93);
+      border-radius: 13px;
+      box-shadow: 0 10px 32px 0 rgba(0,0,0,0.19), 0 1.5px 0 #40ffb7;
+      border: 1.5px solid #40ffb7;
+      padding: 13px 0 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      z-index: 10;
+      transform: translateY(-8px) scale(0.98);
+      transition:
+        opacity 0.29s cubic-bezier(.51,1.64,.41,.8),
+        transform 0.29s cubic-bezier(.51,1.64,.41,.8),
+        box-shadow 0.23s cubic-bezier(.51,1.64,.41,.8),
+        visibility 0.29s;
+      overflow: hidden;
+      backdrop-filter: blur(9px);
+    }
+    .login-dropdown-wrapper:hover .login-dropdown-menu,
+    .login-dropdown-wrapper:focus-within .login-dropdown-menu {
+      opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      box-shadow: 0 12px 40px 0 #1976d299, 0 1.5px 0 #40ffb7;
+    }
+    .login-dropdown-menu button {
+      background: none;
+      border: none;
+      color: #40ffb7;
+      font-size: 1.07em;
+      font-family: inherit;
+      font-weight: bold;
+      padding: 10px 24px;
+      text-align: left;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: background 0.19s, color 0.18s, transform 0.19s;
+      width: 100%;
+      letter-spacing: 0.02em;
+      outline: none;
+      position: relative;
+    }
+    .login-dropdown-menu button:hover, .login-dropdown-menu button:focus {
+      background: linear-gradient(90deg,#40ffb7 0%,#1976d2 100%);
+      color: #fff;
+      transform: translateX(5px) scale(1.04);
+      box-shadow: 0 4px 18px 0 #1976d277;
+    }
+    @media (max-width: 600px) {
+      .top-bar { width: 98vw; padding: 0.3em 0.8em; flex-direction: column; gap: 7px;}
+      .login-modal-box { min-width: 90vw; max-width: 98vw; }
+      .login-dropdown-menu { min-width: 95vw; left: 0; right: unset; }
+    }
+    .login-modal-bg {
+      position: fixed;
+      z-index: 999;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(19,40,29,0.58);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(2px);
+    }
+    .login-modal-bg.active {
+      display: flex;
+      animation: fadeInBG 0.3s;
+    }
+    @keyframes fadeInBG {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .login-modal-box.login-glass {
+      background: rgba(25,27,35, 0.77);
+      border-radius: 13px;
+      box-shadow: 0 8px 36px rgba(0,0,0,0.28);
+      padding: 0 0 8px 0;
+      min-width: 295px;
+      width: 98vw;
+      max-width: 355px;
+      position: relative;
+      border: 1.5px solid #2bffb8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .login-modal-close {
+      position: absolute;
+      top: 10px; right: 15px;
+      background: none;
+      border: none;
+      color: #b0e7d0;
+      font-size: 1.3em;
+      cursor: pointer;
+      font-weight: bold;
+      z-index: 2;
+      transition: color 0.18s;
+    }
+    .login-modal-close:hover {
+      color: #ff5656;
+    }
+    .login-glass-form {
+      width: 92%;
+      margin: 32px auto 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .login-glass-form h2 {
+      text-align: center;
+      color: #fff;
+      font-size: 1.6em;
+      font-weight: bold;
+      margin-bottom: 1.2em;
+      letter-spacing: 0.02em;
+      font-family: inherit;
+      text-shadow: 0 2px 12px #0007;
+    }
+    .login-group {
+      margin-bottom: 1.4em;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .login-group label {
+      color: #fff;
+      font-weight: bold;
+      margin-bottom: 0.37em;
+      font-size: 1em;
+      letter-spacing: 0.01em;
+    }
+    .login-group input {
+      padding: 11px 12px;
+      border-radius: 7px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      font-size: 1.04em;
+      box-shadow: 0 1.5px 8px #0001;
+      transition: background 0.17s, color 0.12s;
+      border: 1.5px solid #242e2b;
+    }
+    .login-group input:focus {
+      background: rgba(255,255,255,0.22);
+      color: #fff;
+      border: 1.5px solid #40ffb7;
+    }
+    .btn-login-main {
+      margin-top: 0.7em;
+      width: 100%;
+      padding: 13px 0;
+      border-radius: 9px;
+      border: none;
+      background: #fff;
+      color: #181f1b;
+      font-size: 1.12em;
+      font-weight: bold;
+      letter-spacing: 0.05em;
+      box-shadow: 0 4px 18px #1976d2a0;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    }
+    .btn-login-main:hover {
+      background: #40ffb7;
+      color: #031a12;
+      box-shadow: 0 0 20px 3px #40ffb7b5;
+    }
+    .msg {
+      color: #e53935;
+      margin-bottom: 1em;
+      min-height: 1.3em;
+      font-weight: bold;
+      letter-spacing: 0.03em;
+      text-shadow: 0 1px 6px #fff9;
+      text-align: center;
+    }
+    .admin-modal-bg {
+      position: fixed;
+      z-index: 1000;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(19,40,29,0.76);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(3px);
+    }
+    .admin-modal-bg.active { display: flex; }
+    .admin-modal-box {
+      background: rgba(25,27,35, 0.87);
+      border-radius: 13px;
+      box-shadow: 0 8px 46px rgba(0,0,0,0.33);
+      padding: 0 0 16px 0;
+      min-width: 295px;
+      width: 98vw;
+      max-width: 355px;
+      position: relative;
+      border: 1.5px solid #2bffb8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .admin-modal-close {
+      position: absolute;
+      top: 10px; right: 15px;
+      background: none;
+      border: none;
+      color: #b0e7d0;
+      font-size: 1.3em;
+      cursor: pointer;
+      font-weight: bold;
+      z-index: 2;
+      transition: color 0.18s;
+    }
+    .admin-modal-close:hover { color: #ff5656; }
+    .admin-glass-form {
+      width: 92%;
+      margin: 34px auto 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .admin-glass-form h2 {
+      text-align: center;
+      color: #fff;
+      font-size: 1.3em;
+      font-weight: bold;
+      margin-bottom: 1.2em;
+      letter-spacing: 0.02em;
+      font-family: inherit;
+      text-shadow: 0 2px 12px #0007;
+    }
+    .admin-group {
+      margin-bottom: 1.3em;
+      display: flex;
+      flex-direction: column;
+    }
+    .admin-group label {
+      color: #fff;
+      font-weight: bold;
+      margin-bottom: 0.37em;
+      font-size: 1em;
+      letter-spacing: 0.01em;
+    }
+    .admin-group input {
+      padding: 11px 12px;
+      border-radius: 7px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.14);
+      color: #fff;
+      font-size: 1.04em;
+      box-shadow: 0 1.5px 8px #0001;
+      transition: background 0.17s, color 0.12s;
+      border: 1.5px solid #242e2b;
+    }
+    .admin-group input:focus {
+      background: rgba(255,255,255,0.22);
+      color: #fff;
+      border: 1.5px solid #40ffb7;
+    }
+    .btn-admin-login {
+      margin-top: 0.7em;
+      width: 100%;
+      padding: 13px 0;
+      border-radius: 9px;
+      border: none;
+      background: #fff;
+      color: #181f1b;
+      font-size: 1.09em;
+      font-weight: bold;
+      letter-spacing: 0.05em;
+      box-shadow: 0 4px 18px #1976d2a0;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    }
+    .btn-admin-login:hover {
+      background: #40ffb7;
+      color: #031a12;
+      box-shadow: 0 0 20px 3px #40ffb7b5;
+    }
+    .msg-admin {
+      color: #e53935;
+      margin-bottom: 1em;
+      min-height: 1.3em;
+      font-weight: bold;
+      letter-spacing: 0.03em;
+      text-shadow: 0 1px 6px #fff9;
+      text-align: center;
+    }
+    @media (max-width: 600px) {
+      .top-bar { width: 98vw; padding: 0.3em 0.8em; flex-direction: column; gap: 7px;}
+      .login-modal-box { min-width: 90vw; max-width: 98vw; }
+      .login-dropdown-menu { min-width: 95vw; left: 0; right: unset; }
+    }
+    @media (max-width: 400px) {
+      .top-bar { flex-direction: column; }
+      .login-modal-box { min-width: 98vw; max-width: 100vw; }
+      .login-group input { font-size: 0.98em; }
+      .btn-login-main { font-size: 0.97em; padding: 11px 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-content">
+    <div class="top-bar">
+      <div class="logo-bar">
+        <img src="icono-servitec.png" alt="icono" />
+        <span>SERVITEC NET</span>
+      </div>
+      <div class="login-dropdown-wrapper" tabindex="0">
+        <button class="login-btn" id="btnOpenLoginDropdown" aria-haspopup="true" aria-expanded="false">
+          Login <i class="material-icons">apps</i>
+        </button>
+        <div class="login-dropdown-menu" id="loginDropdownMenu">
+          <button type="button" onclick="abrirModalLogin('login')">Iniciar Sesión</button>
+          <button type="button" onclick="abrirModalAdmin('historial')">Ver historial</button>
+          <button type="button" onclick="abrirModalAdmin('adminUsuarios')">Administrar usuarios</button>
+        </div>
+      </div>
+    </div>
+    <div class="logo-central"></div>
+  </div>
+  <div class="login-modal-bg" id="modalLogin">
+    <div class="login-modal-box login-glass">
+      <button class="login-modal-close" onclick="cerrarModalLogin()" title="Cerrar">&times;</button>
+      <form class="login-glass-form" autocomplete="on" onsubmit="login();return false;">
+        <h2>Iniciar Sesión</h2>
+        <div class="login-group">
+          <label for="usuario">ID de usuario</label>
+          <input type="text" id="usuario" autocomplete="username" placeholder="ID de usuario" required>
+        </div>
+        <div class="login-group">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" autocomplete="current-password" placeholder="Contraseña" required>
+        </div>
+        <div class="msg" id="msg"></div>
+        <button type="submit" class="btn-login-main">Entrar</button>
+      </form>
+    </div>
+  </div>
+  <div class="admin-modal-bg" id="adminModal">
+    <div class="admin-modal-box">
+      <button class="admin-modal-close" onclick="cerrarModalAdmin()" title="Cerrar">&times;</button>
+      <form class="admin-glass-form" onsubmit="adminLogin(event);return false;">
+        <h2 id="adminModalTitulo">Login Administrador</h2>
+        <div class="admin-group">
+          <label for="adminUser">Usuario administrador</label>
+          <input type="text" id="adminUser" required autocomplete="username" placeholder="Usuario administrador">
+        </div>
+        <div class="admin-group">
+          <label for="adminPass">Contraseña</label>
+          <input type="password" id="adminPass" required autocomplete="current-password" placeholder="Contraseña">
+        </div>
+        <div class="msg-admin" id="msgAdmin"></div>
+        <button class="btn-admin-login" type="submit">Entrar</button>
+      </form>
+    </div>
+  </div>
+  <script>
+    let adminDestino = null;
+    function abrirModalLogin(section) {
+      document.getElementById('modalLogin').classList.add('active');
+      document.querySelectorAll('.login-glass-form').forEach(f=>f.style.display='none');
+      document.querySelector('.login-glass-form').style.display = 'flex';
+      document.getElementById('msg').textContent = "";
+      document.getElementById('usuario').focus();
+    }
+    function cerrarModalLogin() {
+      document.getElementById('modalLogin').classList.remove('active');
+      document.getElementById('msg').textContent = "";
+      document.querySelectorAll('.login-glass-form input').forEach(i=>i.value = '');
+    }
+    function abrirModalAdmin(destino) {
+      adminDestino = destino;
+      document.getElementById('adminModal').classList.add('active');
+      document.getElementById('adminUser').focus();
+      document.getElementById('msgAdmin').textContent = "";
+      document.getElementById('adminModalTitulo').textContent = destino === 'adminUsuarios' ? "Administrar usuarios (Admin)" : "Login Administrador";
+    }
+    function cerrarModalAdmin() {
+      document.getElementById('adminModal').classList.remove('active');
+      document.getElementById('msgAdmin').textContent = "";
+      document.getElementById('adminUser').value = "";
+      document.getElementById('adminPass').value = "";
+    }
+    function adminLogin(event) {
+      event.preventDefault();
+      const usuario = document.getElementById('adminUser').value.trim();
+      const password = document.getElementById('adminPass').value;
+      if (!usuario || !password) {
+        document.getElementById('msgAdmin').textContent = "Completa los campos para entrar.";
+        return false;
+      }
+      fetch('/api/admin-login', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({usuario, password})
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          document.getElementById('msgAdmin').textContent = "";
+          cerrarModalAdmin();
+          if (adminDestino === 'historial') window.location.href = "/recepciones.html";
+          else if (adminDestino === 'adminUsuarios') window.location.href = "/usuarios.html";
+        }
+        else {
+          document.getElementById('msgAdmin').textContent = data.error || "Login de administrador incorrecto.";
+        }
+      }).catch(() => {
+        document.getElementById('msgAdmin').textContent = "Error de conexión.";
+      });
+      return false;
+    }
+    function login() {
+      const usuario = document.getElementById('usuario').value.trim();
+      const password = document.getElementById('password').value;
+      if (!usuario || !password) {
+        document.getElementById('msg').textContent = "Completa los campos para entrar.";
+        return;
+      }
+      fetch('/api/login', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({usuario, password})
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) window.location.href = '/';
+        else document.getElementById('msg').textContent = data.error || "Error al iniciar sesión.";
+      }).catch(() => {
+        document.getElementById('msg').textContent = "Error de conexión.";
+      });
+    }
+  </script>
+</body>
+</html>

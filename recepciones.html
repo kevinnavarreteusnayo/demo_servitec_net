@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Recepciones Registradas - Servitec NET</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: url('fondo-servitec.jpg') no-repeat center center fixed;
+      background-size: cover;
+      position: relative;
+      overflow: hidden;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15,50,40,0.67);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .contenedor-recepciones {
+      position: relative;
+      z-index: 1;
+      min-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 60px;
+    }
+    .tabla-glass {
+      background: rgba(25,27,35, 0.89);
+      border-radius: 17px;
+      box-shadow: 0 8px 32px 0 rgba(0,0,0,0.28);
+      padding: 30px 35px 30px 35px;
+      min-width: 340px;
+      width: 96vw;
+      max-width: 1100px;
+      margin: 0 auto;
+      border: 2px solid #40ffb7;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .tabla-glass h2 {
+      color: #fff;
+      text-align: center;
+      font-size: 2.1em;
+      font-weight: bold;
+      margin: 0 0 20px 0;
+      letter-spacing: 0.03em;
+      text-shadow: 0 2px 18px #0007;
+    }
+    .tabla-glass .cerrar-sesion {
+      background: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 8px 24px;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 24px;
+      align-self: flex-end;
+      transition: background 0.16s, color 0.16s, box-shadow 0.16s;
+      box-shadow: 0 2px 14px #1976d265;
+    }
+    .tabla-glass .cerrar-sesion:hover {
+      background: #40ffb7;
+      color: #1976d2;
+      box-shadow: 0 0 16px #40ffb7b2;
+    }
+    .busqueda-barra {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 18px;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .busqueda-barra input[type="text"] {
+      padding: 7px 11px;
+      font-size: 1em;
+      border-radius: 6px;
+      border: 1.5px solid #40ffb7;
+      outline: none;
+      width: 210px;
+      transition: border 0.16s;
+      background: #222e28;
+      color: #b1ffe6;
+    }
+    .busqueda-barra input[type="text"]:focus {
+      border-color: #1976d2;
+    }
+    .busqueda-barra button {
+      padding: 7px 18px;
+      border-radius: 6px;
+      border: none;
+      background: #40ffb7;
+      color: #181f1b;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.17s, color 0.17s, box-shadow 0.17s;
+      box-shadow: 0 2px 8px #1976d265;
+    }
+    .busqueda-barra button:hover {
+      background: #1976d2;
+      color: #fff;
+      box-shadow: 0 0 12px #1976d2b3;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: none;
+      color: #e0fff6;
+      font-size: 1.08em;
+      margin-bottom: 8px;
+    }
+    th, td {
+      padding: 10px 8px;
+      text-align: left;
+      border-bottom: 1px solid #2bffb8;
+    }
+    th {
+      background: rgba(64,255,183,0.11);
+      color: #40ffb7;
+      font-size: 1.09em;
+      font-weight: bold;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid #40ffb7;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .acciones-btn {
+      display: flex;
+      gap: 7px;
+    }
+    .acciones-btn button {
+      padding: 4px 13px;
+      background: #40ffb7;
+      color: #181f1b;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.99em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.17s, color 0.17s, box-shadow 0.17s;
+      box-shadow: 0 2px 8px #1976d265;
+    }
+    .acciones-btn button:hover {
+      background: #1976d2;
+      color: #fff;
+      box-shadow: 0 0 12px #1976d2b3;
+    }
+    .acciones-btn .eliminar {
+      background: #ff5656;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 13px;
+      box-shadow: 0 2px 8px #ff565675;
+      transition: background 0.17s, color 0.17s, box-shadow 0.17s;
+    }
+    .acciones-btn .eliminar:hover {
+      background: #d21f1f;
+      color: #fff;
+      box-shadow: 0 0 12px #d21f1fb3;
+    }
+    .no-registros {
+      color: #fff;
+      font-size: 1.09em;
+      margin: 1.6em auto 1.1em auto;
+      text-align: center;
+      letter-spacing: 0.02em;
+      text-shadow: 0 2px 16px #0006;
+    }
+    .descripcion-previa-bg {
+      position: fixed;
+      z-index: 2000;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(19,40,29,0.78);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(3px);
+    }
+    .descripcion-previa-bg.active { display: flex; }
+    .descripcion-previa-box {
+      background: rgba(25,27,35, 0.94);
+      border-radius: 17px;
+      box-shadow: 0 8px 46px rgba(0,0,0,0.38);
+      min-width: 295px;
+      width: 96vw;
+      max-width: 420px;
+      position: relative;
+      border: 2px solid #2bffb8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 18px 22px 18px;
+    }
+    .descripcion-previa-close {
+      position: absolute;
+      top: 13px; right: 18px;
+      background: none;
+      border: none;
+      color: #b0e7d0;
+      font-size: 1.4em;
+      cursor: pointer;
+      font-weight: bold;
+      z-index: 2;
+      transition: color 0.18s;
+    }
+    .descripcion-previa-close:hover {
+      color: #ff5656;
+    }
+    .descripcion-previa-contenido {
+      width: 100%;
+      color: #fff;
+      font-size: 1.07em;
+      line-height: 1.45;
+      margin-top: 8px;
+      margin-bottom: 10px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      text-align: left;
+    }
+    .btn-agregar-registro {
+      background: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 10px 32px;
+      font-size: 1.13em;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 18px auto 0 auto;
+      align-self: center;
+      display: block;
+      box-shadow: 0 2px 24px #1976d299;
+      transition: background 0.16s, color 0.16s;
+    }
+    .btn-agregar-registro:hover {
+      background: #40ffb7;
+      color: #1976d2;
+      box-shadow: 0 0 16px #40ffb7b2;
+    }
+    /* Modal edición comentario solución */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      z-index: 4000;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(19,40,29,0.78);
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(3px);
+    }
+    .modal-bg.active { display: flex; }
+    .modal-box {
+      background: #222c23;
+      border-radius: 13px;
+      box-shadow: 0 8px 46px rgba(0,0,0,0.38);
+      min-width: 295px;
+      width: 96vw;
+      max-width: 420px;
+      position: relative;
+      border: 2px solid #2bffb8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 18px 22px 18px;
+    }
+    .modal-close {
+      position: absolute;
+      top: 13px; right: 18px;
+      background: none;
+      border: none;
+      color: #b0e7d0;
+      font-size: 1.4em;
+      cursor: pointer;
+      font-weight: bold;
+      z-index: 2;
+      transition: color 0.18s;
+    }
+    .modal-close:hover {
+      color: #ff5656;
+    }
+    .modal-box textarea {
+      width: 98%;
+      min-height: 90px;
+      margin-top: 9px;
+      font-size: 1.05em;
+      border-radius: 7px;
+      border: 1.5px solid #40ffb7;
+      padding: 8px;
+      background: #1a2320;
+      color: #b1ffe6;
+    }
+    .modal-box button {
+      margin-top: 12px;
+      padding: 8px 22px;
+      border-radius: 6px;
+      border: none;
+      background: #40ffb7;
+      color: #181f1b;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.17s, color 0.17s;
+      box-shadow: 0 2px 8px #1976d265;
+    }
+    .modal-box button:hover {
+      background: #1976d2;
+      color: #fff;
+      box-shadow: 0 0 12px #1976d2b3;
+    }
+    .modal-box label {
+      color: #40ffb7;
+      font-weight: bold;
+      margin-bottom: 7px;
+      font-size: 1.08em;
+      display: block;
+      margin-top: 8px;
+    }
+    .solucion-label {
+      color: #40ffb7;
+      font-weight: bold;
+      margin-top: 0.8em;
+      display: block;
+      font-size: 1.06em;
+    }
+    .solucion-text {
+      color: #b2ffda;
+      margin-top: 2px;
+      font-size: 1.05em;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    /* Modal Búsqueda Avanzada */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      z-index: 5000;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(19,40,29,0.78);
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(3px);
+    }
+    .modal-bg.active { display: flex; }
+    .modal-box.busqueda-avanzada {
+      background: #222c23;
+      border-radius: 13px;
+      box-shadow: 0 8px 46px rgba(0,0,0,0.38);
+      max-width: 500px;
+      width: 90vw;
+      position: relative;
+      border: 2px solid #2bffb8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 25px;
+    }
+    .modal-box.busqueda-avanzada h3 {
+      color: #40ffb7;
+      margin: 0 0 20px 0;
+      font-size: 1.3em;
+      text-align: center;
+    }
+    .campo-busqueda {
+      margin-bottom: 15px;
+      width: 100%;
+    }
+    .campo-busqueda label {
+      display: block;
+      color: #b1ffe6;
+      margin-bottom: 5px;
+    }
+    .campo-busqueda input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1.5px solid #40ffb7;
+      background: #1a2320;
+      color: #b1ffe6;
+      font-size: 1em;
+    }
+    .botones-busqueda {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .botones-busqueda button {
+      padding: 8px 20px;
+      font-size: 1em;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="contenedor-recepciones">
+    <div class="tabla-glass">
+      <button class="cerrar-sesion" onclick="logout()">Cerrar sesión</button>
+      <h2>Recepciones Registradas</h2>
+      <!-- Barra de búsqueda -->
+      <div class="busqueda-barra">
+        <input type="text" id="busquedaDocumento" placeholder="Buscar por nombre o DNI..." oninput="filtrarRecepciones()" autocomplete="off">
+        <button type="button" onclick="limpiarBusqueda()">Limpiar</button>
+      </div>
+      <div id="tabla-recepciones"></div>
+      <button class="btn-agregar-registro" onclick="irARegistro()">Agregar otro registro</button>
+    </div>
+  </div>
+  <!-- Modal Descripción Previa -->
+  <div class="descripcion-previa-bg" id="descripcionPreviaModal">
+    <div class="descripcion-previa-box">
+      <button class="descripcion-previa-close" onclick="cerrarDescripcionPrevia()" title="Cerrar">&times;</button>
+      <div class="descripcion-previa-contenido" id="descripcionPreviaContenido"></div>
+    </div>
+  </div>
+  <!-- Modal edición comentario solución -->
+  <div class="modal-bg" id="modalSolucion">
+    <div class="modal-box">
+      <button class="modal-close" onclick="cerrarModalSolucion()" title="Cerrar">&times;</button>
+      <label for="txtSolucion">Comentario de solución y proceso realizado:</label>
+      <textarea id="txtSolucion"></textarea>
+      <button onclick="guardarSolucion()">Guardar</button>
+    </div>
+  </div>
+  <script>
+    let todasLasRecepciones = [];
+    let idEdicionSolucion = null;
+    function logout() {
+      fetch('/api/logout', { method: 'POST' })
+        .then(() => window.location.href = '/login.html');
+    }
+    function irARegistro() {
+      window.location.href = "/index.html";
+    }
+    function cargarRecepciones() {
+      fetch('/api/recepciones')
+        .then(res => res.json())
+        .then(data => {
+          if (!data.ok || !data.recepciones) {
+            todasLasRecepciones = [];
+            mostrarRecepciones([]);
+            return;
+          }
+          todasLasRecepciones = data.recepciones;
+          mostrarRecepciones(todasLasRecepciones);
+        });
+    }
+    function mostrarRecepciones(recepciones) {
+      const tablaDiv = document.getElementById('tabla-recepciones');
+      if (!recepciones || recepciones.length === 0) {
+        tablaDiv.innerHTML = '<div class="no-registros">No hay registros</div>';
+        return;
+      }
+      let html = `<table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Fecha Recepción</th>
+            <th>Cliente</th>
+            <th>Equipo</th>
+            <th>Problema</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>`;
+      recepciones.forEach(r => {
+        let datos = r.datos || {};
+        html += `<tr>
+          <td data-label="ID">${r.id}</td>
+          <td data-label="Usuario">${r.usuario}</td>
+          <td data-label="Fecha Recepción">${new Date(r.fecha_recepcion).toLocaleString()}</td>
+          <td data-label="Cliente">${datos.cliente || datos.nombres || ''} ${datos.apellidos || ''}</td>
+          <td data-label="Equipo">${datos.equipo || datos.tipo_equipo || ''} ${datos.modelo || ''}</td>
+          <td data-label="Problema">${datos.problema || datos.descripcion_problema || ''}</td>
+          <td data-label="Acciones" class="acciones-btn">
+            <button onclick="verDescripcionPrevia(${r.id})">Ver</button>
+            <button onclick="descargarPDF(${r.id})">Descargar</button>
+            <button class="eliminar" onclick="eliminarRecepcion(${r.id})">Eliminar</button>
+            <button onclick="abrirModalSolucion(${r.id})">Ingresar solución</button>
+          </td>
+        </tr>`;
+      });
+      html += `</tbody></table>`;
+      tablaDiv.innerHTML = html;
+    }
+    function filtrarRecepciones() {
+      const filtro = document.getElementById('busquedaDocumento').value.toLowerCase().trim();
+      if (!filtro) {
+        mostrarRecepciones(todasLasRecepciones);
+        return;
+      }
+      const filtradas = todasLasRecepciones.filter(r => {
+        const datos = r.datos || {};
+        const nombreCompleto = `${datos.nombres || ''} ${datos.apellidos || ''}`.toLowerCase();
+        const numDoc = datos.numero_documento ? String(datos.numero_documento).toLowerCase() : "";
+        return nombreCompleto.includes(filtro) || numDoc.includes(filtro);
+      });
+      mostrarRecepciones(filtradas);
+    }
+    function limpiarBusqueda() {
+      document.getElementById('busquedaDocumento').value = "";
+      mostrarRecepciones(todasLasRecepciones);
+    }
+    function verDescripcionPrevia(id) {
+      const recep = todasLasRecepciones.find(r => r.id === id);
+      if (!recep) return;
+      let datos = recep.datos || {};
+      let det = `<b>ID:</b> ${recep.id}<br>
+      <b>Usuario:</b> ${recep.usuario}<br>
+      <b>Fecha Recepción:</b> ${new Date(recep.fecha_recepcion).toLocaleString()}<br>
+      <b>Cliente:</b> ${datos.cliente || datos.nombres || ''} ${datos.apellidos || ''}<br>
+      <b>Equipo:</b> ${datos.equipo || datos.tipo_equipo || ''} ${datos.modelo || ''}<br>
+      <b>Problema:</b> ${datos.problema || datos.descripcion_problema || ''}<br>
+      <b>Estado del equipo:</b> ${datos.estado_fisico || ''}<br>
+      <b>Fecha registro:</b> ${new Date(recep.fecha_recepcion).toLocaleString()}<br>
+      <div class="solucion-label">Estado de solución:</div>
+      <div class="solucion-text">${recep.solucion ? 'SOLUCIONADO' : 'AÚN NO SOLUCIONADO'}</div>`;
+      
+      if (recep.solucion) {
+        det += `<div class="solucion-label">Detalle de la solución:</div>
+        <div class="solucion-text">${recep.solucion}</div>`;
+      }
+      
+      document.getElementById('descripcionPreviaContenido').innerHTML = det;
+      document.getElementById('descripcionPreviaModal').classList.add('active');
+    }
+    function cerrarDescripcionPrevia() {
+      document.getElementById('descripcionPreviaModal').classList.remove('active');
+    }
+    function eliminarRecepcion(id) {
+      if(!confirm("¿Seguro que desea eliminar esta recepción?")) return;
+      fetch(`/api/recepciones/${id}`, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok) {
+            todasLasRecepciones = todasLasRecepciones.filter(r => r.id !== id);
+            mostrarRecepciones(todasLasRecepciones);
+            filtrarRecepciones();
+          } else {
+            alert("No se pudo eliminar.");
+          }
+        })
+        .catch(() => alert("Ocurrió un error al eliminar."));
+    }
+    function descargarPDF(id) {
+      const recep = todasLasRecepciones.find(r => r.id === id);
+      if (!recep) return;
+      const logoUrl = '/logo-servitec.png';
+      fetch(logoUrl)
+        .then(r => r.blob())
+        .then(blob => new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        }))
+        .then(logoBase64 => {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+          doc.setFontSize(16);
+          doc.text("Recepción de Equipo", 14, 18);
+          if (logoBase64) doc.addImage(logoBase64, 'PNG', 160, 10, 40, 18);
+          doc.setFontSize(12);
+          let y = 30;
+          doc.text("Datos del Personal:", 14, y); y += 7;
+          doc.setFontSize(10);
+          doc.text(`Personal que atendió: ${recep.usuario || ''}`, 16, y); y += 11;
+          doc.setFontSize(12);
+          doc.text("Datos del Cliente:", 14, y); y += 7;
+          doc.setFontSize(10);
+          let datos = recep.datos || {};
+          doc.text(`Tipo documento: ${datos.tipo_documento || ''}`, 16, y);
+          doc.text(`Número documento: ${datos.numero_documento || ''}`, 90, y); y += 7;
+          doc.text(`Nombres: ${datos.nombres || ''}`, 16, y);
+          doc.text(`Apellidos: ${datos.apellidos || ''}`, 90, y); y += 7;
+          doc.text(`Teléfono: ${datos.telefono || ''}`, 16, y);
+          doc.text(`Email: ${datos.email || ''}`, 90, y); y += 7;
+          doc.text(`Dirección: ${datos.direccion || ''}`, 16, y); y += 11;
+          doc.setFontSize(12);
+          doc.text("Datos del Equipo:", 14, y); y += 7;
+          doc.setFontSize(10);
+          doc.text(`Tipo equipo: ${datos.tipo_equipo || ''}`, 16, y);
+          doc.text(`Modelo: ${datos.modelo || ''}`, 90, y); y += 7;
+          doc.text(`Serie: ${datos.serie || ''}`, 16, y); y += 7;
+          doc.text(`Descripción problema: ${datos.problema || ''}`, 16, y); y += 11;
+          doc.setFontSize(12);
+          doc.text("Estado del Equipo:", 14, y); y += 7;
+          doc.setFontSize(10);
+          doc.text(`Estado físico: ${datos.estado_fisico || ''}`, 16, y);
+          doc.text(`Observaciones estado físico: ${datos.observaciones_estado || ''}`, 90, y); y += 11;
+          doc.setFontSize(12);
+          doc.text("Componentes Incluidos:", 14, y); y += 7;
+          doc.setFontSize(10);
+          doc.text(`Procesador: ${datos.procesador || ''}`, 16, y);
+          doc.text(`Memoria RAM: ${datos.ram || ''}`, 90, y); y += 7;
+          doc.text(`Tarjeta gráfica: ${datos.tarjeta_grafica || ''}. VRAM: ${datos.vram || ''}. Marca: ${datos.marca_gpu || ''}`, 16, y); y += 7;
+          doc.text(`Almacenamiento: ${datos.almacenamiento || ''}`, 16, y); y += 7;
+          doc.text(`Cargador: ${datos.cargador || 'No'} Mouse: ${datos.mouse || 'No'} Teclado: ${datos.teclado || 'No'} Funda: ${datos.funda || 'No'} Otros: ${datos.otros || 'No'}`, 16, y); y += 7;
+          doc.text(`Observaciones: ${datos.observaciones || ''}`, 16, y); y += 11;
+          doc.setFontSize(12);
+          doc.text("Registro:", 14, y); y += 7;
+          doc.setFontSize(10);
+          doc.text(`Fecha de recepción: ${new Date(recep.fecha_recepcion).toLocaleString()}`, 16, y);
+          doc.text(`Nº de Orden: ${recep.numero_orden || recep.id}`, 90, y); y += 16;
+          doc.setLineWidth(0.3);
+          doc.line(14, y, 90, y);
+          doc.line(120, y, 196, y);
+          if (recep.solucion) {
+            y += 12;
+            doc.setFontSize(11);
+            doc.text("Comentario de solución y proceso realizado:", 14, y); y += 7;
+            doc.setFontSize(10);
+            let lines = doc.splitTextToSize(recep.solucion, 180);
+            doc.text(lines, 16, y);
+          }
+          doc.save(`recepcion_${id}.pdf`);
+        })
+        .catch(() => {
+          alert('Error al cargar el logo para el PDF.');
+        });
+    }
+    function abrirModalSolucion(id) {
+      idEdicionSolucion = id;
+      const recep = todasLasRecepciones.find(r => r.id === id);
+      document.getElementById('txtSolucion').value = recep && recep.solucion ? recep.solucion : '';
+      document.getElementById('modalSolucion').classList.add('active');
+    }
+    function cerrarModalSolucion() {
+      document.getElementById('modalSolucion').classList.remove('active');
+      idEdicionSolucion = null;
+    }
+    function guardarSolucion() {
+      const solucion = document.getElementById('txtSolucion').value.trim();
+      if (!idEdicionSolucion) return;
+      
+      if (!solucion) {
+        alert('Por favor ingrese una solución');
+        return;
+      }
+
+      fetch(`/api/recepciones/${idEdicionSolucion}/solucion`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ solucion })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          const idx = todasLasRecepciones.findIndex(r => r.id === idEdicionSolucion);
+          if (idx !== -1) todasLasRecepciones[idx].solucion = solucion;
+          mostrarRecepciones(todasLasRecepciones);
+          cerrarModalSolucion();
+          alert('Solución guardada correctamente');
+        } else {
+          alert(data.error || 'No se pudo guardar la solución');
+        }
+      })
+      .catch(() => alert('Error de conexión al guardar la solución'));
+    }
+    cargarRecepciones();
+  </script>
+</body>
+</html>
