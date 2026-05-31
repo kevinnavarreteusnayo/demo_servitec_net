@@ -10,7 +10,7 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', Arial, sans-serif;
-      background: url('fondo-servitec.jpg') no-repeat center center fixed;
+      background: url('public/fondo-servitec.jpg') no-repeat center center fixed;
       background-size: cover;
       position: relative;
       min-height: 100vh;
@@ -258,7 +258,16 @@
       return fetch('/api/yo')
         .then(res => res.json())
         .then(data => {
+          if (!data.usuario) {
+            window.location.href = '/login.html';
+            return false;
+          }
           esAdmin = !!data.es_admin;
+          return true;
+        })
+        .catch(() => {
+          window.location.href = '/login.html';
+          return false;
         });
     }
     function cargarArchivos(ruta = '/') {

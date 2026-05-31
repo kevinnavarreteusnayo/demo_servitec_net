@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: Arial, sans-serif; margin: 0; padding: 0;
-      background: url('fondo-servitec.jpg') no-repeat center center fixed;
+      background: url('public/fondo-servitec.jpg') no-repeat center center fixed;
       background-size: cover;
       position: relative;
       min-height: 100vh;
@@ -315,7 +315,7 @@
         <div>Dirección: MZ E LOTE 32 ANCIETA ALTA - EL AGUSTINO</div>
         <div class="order-number">N° de Orden: <span id="numeroOrden"></span></div>
       </div>
-      <img src="logo-servitec.png" alt="Logo Servitec NET" class="logo" id="logoEmpresa">
+      <img src="public/logo-servitec.png" alt="Logo Servitec NET" class="logo" id="logoEmpresa">
     </div>
     <h1>Recepción de Equipo</h1>
     <form id="recepcionForm" autocomplete="off">
@@ -833,10 +833,18 @@
       }
     }
 
+    // Verificar autenticación al cargar la página
     fetch('/api/yo')
       .then(res => res.json())
       .then(data => {
+        if (!data.usuario) {
+          window.location.href = '/login.html';
+          return;
+        }
         if(data.es_admin) document.getElementById('btnVerHistorial').style.display = "block";
+      })
+      .catch(() => {
+        window.location.href = '/login.html';
       });
     function verHistorial() {
       window.location.href = '/recepciones.html';

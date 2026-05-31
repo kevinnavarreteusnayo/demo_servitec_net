@@ -10,7 +10,7 @@
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', Arial, sans-serif;
-      background: url('fondo-servitec.jpg') no-repeat center center fixed;
+      background: url('public/fondo-servitec.jpg') no-repeat center center fixed;
       background-size: cover;
       position: relative;
       overflow: hidden;
@@ -674,7 +674,20 @@
       })
       .catch(() => alert('Error de conexión al guardar la solución'));
     }
-    cargarRecepciones();
+    
+    // Verificar autenticación y permisos de admin al cargar la página
+    fetch('/api/yo')
+      .then(res => res.json())
+      .then(data => {
+        if (!data.usuario || !data.es_admin) {
+          window.location.href = '/login.html';
+          return;
+        }
+        cargarRecepciones();
+      })
+      .catch(() => {
+        window.location.href = '/login.html';
+      });
   </script>
 </body>
 </html>

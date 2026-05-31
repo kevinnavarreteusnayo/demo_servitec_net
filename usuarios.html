@@ -11,7 +11,7 @@
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', Arial, sans-serif;
-      background: url('fondo-servitec.jpg') no-repeat center center fixed;
+      background: url('public/fondo-servitec.jpg') no-repeat center center fixed;
       background-size: cover;
       position: relative;
       overflow: hidden;
@@ -447,7 +447,8 @@
     }
 
     function eliminarUsuario(usuario) {
-      if(usuario==='104958') return alert('No puedes eliminar el administrador principal.');
+      const protectedUser = '104958'; // Este valor debería coincidir con DEFAULT_ADMIN_USER
+      if(usuario===protectedUser) return alert('No puedes eliminar el administrador principal.');
       if(!confirm('¿Seguro que deseas eliminar el usuario '+usuario+'?')) return;
       fetch('/api/eliminar-usuario', {
         method:'POST',
@@ -461,7 +462,8 @@
     }
 
     function toggleAdmin(usuario, esAdmin) {
-      if(usuario==='104958') return alert('No puedes modificar el administrador principal.');
+      const protectedUser = '104958'; // Este valor debería coincidir con DEFAULT_ADMIN_USER
+      if(usuario===protectedUser) return alert('No puedes modificar el administrador principal.');
       fetch('/api/cambiar-admin', {
         method:'POST',
         headers:{'Content-Type':'application/json'},

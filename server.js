@@ -36,7 +36,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
-  secret: 'secreto-muy-seguro',
+  secret: process.env.SESSION_SECRET || 'servitec-net-secret-key-production-2024',
   resave: false,
   saveUninitialized: false
 }));
@@ -101,11 +101,13 @@ const db = new sqlite3.Database(DB_PATH, sqlite3.OPEN_READWRITE | sqlite3.OPEN_C
       }
     });
   });
-  db.get('SELECT * FROM usuarios WHERE usuario = ?', ['104958'], (err, row) => {
+  const defaultAdminUser = process.env.DEFAULT_ADMIN_USER || '104958';
+  const defaultAdminPass = process.env.DEFAULT_ADMIN_PASS || '282425';
+  db.get('SELECT * FROM usuarios WHERE usuario = ?', [defaultAdminUser], (err, row) => {
     if (!row) {
-      bcrypt.hash('282425', 10, (err, hash) => {
+      bcrypt.hash(defaultAdminPass, 10, (err, hash) => {
         db.run('INSERT INTO usuarios (usuario, password, es_admin) VALUES (?, ?, ?)',
-          ['104958', hash, 1]);
+          [defaultAdminUser, hash, 1]);
       });
     }
   });
@@ -269,7 +271,8 @@ app.get('/api/usuarios', requireAdmin, (req, res) => {
 // Eliminar usuario (solo admin)
 app.post('/api/eliminar-usuario', requireAdmin, (req, res) => {
   const { usuario } = req.body;
-  if (!usuario || usuario === "104958") return res.json({ ok: false, error: "No puedes eliminar el admin principal" });
+  const protectedUser = process.env.DEFAULT_ADMIN_USER || '104958';
+  if (!usuario || usuario === protectedUser) return res.json({ ok: false, error: "No puedes eliminar el admin principal" });
   db.run('DELETE FROM usuarios WHERE usuario = ?', [usuario], function (err) {
     if (err || this.changes === 0) return res.json({ ok: false, error: "No se pudo eliminar" });
     res.json({ ok: true });
@@ -279,7 +282,8 @@ app.post('/api/eliminar-usuario', requireAdmin, (req, res) => {
 // Cambiar estado admin de usuario (solo admin)
 app.post('/api/cambiar-admin', requireAdmin, (req, res) => {
   const { usuario, es_admin } = req.body;
-  if (!usuario || usuario === "104958") return res.json({ ok: false, error: "No puedes modificar el admin principal" });
+  const protectedUser = process.env.DEFAULT_ADMIN_USER || '104958';
+  if (!usuario || usuario === protectedUser) return res.json({ ok: false, error: "No puedes modificar el admin principal" });
   db.run('UPDATE usuarios SET es_admin = ? WHERE usuario = ?', [es_admin ? 1 : 0, usuario], function (err) {
     if (err || this.changes === 0) return res.json({ ok: false, error: "No se pudo cambiar estado" });
     res.json({ ok: true });
