@@ -125,11 +125,8 @@ function requireAdmin(req, res, next) {
 
 // --- Rutas principales de HTML ---
 app.get('/', (req, res) => {
-  if (!req.session.usuario) {
-    res.sendFile(path.join(__dirname, 'login.html'));
-  } else {
-    res.sendFile(path.join(__dirname, 'index.html'));
-  }
+  // Siempre mostrar login.html en la raíz, el usuario debe hacer login primero
+  res.sendFile(path.join(__dirname, 'login.html'));
 });
 app.get('/index.html', requireLogin, (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
